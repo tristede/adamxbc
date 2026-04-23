@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADAMXBC | Liens</title>
+    
+    <!-- Polices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@900&display=swap" rel="stylesheet">
+    
+    <!-- Icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#95ff66',
+                    },
+                    fontFamily: {
+                        display: ['Outfit', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'spin-slow': 'spin 60s linear infinite',
+                        'counter-spin': 'counter-spin 60s linear infinite',
+                    },
+                    keyframes: {
+                        'counter-spin': {
+                            from: { transform: 'rotate(0deg)' },
+                            to: { transform: 'rotate(-360deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #030005; 
+            margin: 0;
+            color: #ffffff;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* --- GLOW AMBIANT --- */
+        .ambient-glow {
+            position: fixed;
+            width: 55vw; 
+            height: 55vw;
+            background: radial-gradient(circle, rgba(149,255,102,0.03) 0%, rgba(0,0,0,0) 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- ANIMATIONS DE BASE --- */
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translate(var(--drag-x, 0px), calc(var(--drag-y, 0px) + 17px)); } 
+            to { opacity: 1; transform: translate(var(--drag-x, 0px), var(--drag-y, 0px)); }
+        }
+
+        .blob-morph {
+            border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%;
+            animation: morph 12s ease-in-out infinite;
+        }
+
+        @keyframes morph {
+            0%   { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; }
+            33%  { border-radius: 65% 35% 55% 45% / 55% 65% 35% 45%; }
+            66%  { border-radius: 40% 60% 30% 70% / 60% 40% 70% 30%; }
+            100% { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; }
+        }
+
+        /* --- REFLET DU TITRE (PIXEL ART) --- */
+        .glow-title {
+            background: linear-gradient(
+                110deg,
+                #ffffff 0%,
+                #ffffff 45%,
+                #b0b5b9 45%, #b0b5b9 48%, 
+                #ffffff 48%, #ffffff 50%, 
+                #b0b5b9 50%, #b0b5b9 52%, 
+                #ffffff 52%, #ffffff 100%
+            );
+            background-size: 400% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(149, 255, 102, 0.4));
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            animation: textShine 5s steps(25) infinite;
+        }
+
+        @keyframes textShine {
+            0% { background-position: 100% center; } 
+            40% { background-position: 0% center; }  
+            100% { background-position: 0% center; } 
+        }
+
+        /* --- BOUTONS --- */
+        .btn-active {
+            background-color: #95ff66; 
+            color: #000;
+            border-radius: 18px; 
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 4.4px 11px rgba(149, 255, 102, 0.1);
+            padding: 18px 24px; 
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-active:hover {
+            transform: translateY(-2.2px) scale(1.02) !important;
+            box-shadow: 0 0 33px rgba(149, 255, 102, 0.4);
+            background-color: #b3ff8c;
+        }
+
+        /* --- REFLETS SUR LES BOUTONS (PIXEL ART) --- */
+        .btn-active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100px;
+            width: 50px;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%,
+                rgba(220, 255, 180, 0.9) 0%, rgba(220, 255, 180, 0.9) 40%,
+                transparent 40%, transparent 60%,
+                rgba(220, 255, 180, 0.5) 60%, rgba(220, 255, 180, 0.5) 80%,
+                transparent 80%
+            );
+            transform: skewX(-25deg);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes btnShine1 { 0% { left: -100px; } 25% { left: 120%; } 100% { left: 120%; } }
+        @keyframes btnShine2 { 0% { left: -100px; } 20% { left: 120%; } 100% { left: 120%; } }
+        @keyframes btnShine3 { 0% { left: -100px; } 28% { left: 120%; } 100% { left: 120%; } }
+
+        .shine-1::after { animation: btnShine1 6.5s steps(20) infinite; }
+        .shine-2::after { animation: btnShine2 8.2s steps(20) infinite 1.5s; }
+        .shine-3::after { animation: btnShine3 7.4s steps(20) infinite 0.8s; }
+
+        /* --- BOUTON DISCORD --- */
+        .btn-inverted {
+            background-color: #050505; 
+            color: #95ff66;
+            border: 2px solid #95ff66;
+            border-radius: 18px; 
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 4.4px 11px rgba(149, 255, 102, 0.1), inset 0 0 15px rgba(149, 255, 102, 0.05);
+            padding: 27px 24px; 
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .btn-inverted:hover {
+            transform: translateY(-2.2px) scale(1.02) !important;
+            box-shadow: 0 0 33px rgba(149, 255, 102, 0.4), inset 0 0 20px rgba(149, 255, 102, 0.15);
+            background-color: #0a0a0a;
+        }
+
+        .btn-inverted::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100px;
+            width: 50px;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%,
+                rgba(149, 255, 102, 0.8) 0%, rgba(149, 255, 102, 0.8) 40%,
+                transparent 40%, transparent 60%,
+                rgba(149, 255, 102, 0.4) 60%, rgba(149, 255, 102, 0.4) 80%,
+                transparent 80%
+            );
+            transform: skewX(-25deg);
+            pointer-events: none;
+            z-index: 10;
+        }
+        .shine-inverted::after { animation: btnShine1 7.5s steps(20) infinite 2s; }
+
+        .icon-blob-inverted {
+            width: 44px; 
+            height: 44px;
+            background: #95ff66;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px; 
+            flex-shrink: 0;
+        }
+
+        .anim-float { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-2.5px); } 
+        }
+
+        .btn-disabled {
+            background-color: #0f0f0f;
+            color: #444;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 18px 24px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-blob {
+            width: 40px; 
+            height: 40px;
+            background: #000;
+            color: #95ff66;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px; 
+            flex-shrink: 0;
+        }
+
+        .mobile-wrapper {
+            max-width: 440px; 
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 55px 22px; 
+            position: relative;
+        }
+
+        /* --- HOVER EFFET PP (RENFONCEMENT) --- */
+        #pp-toggle:hover {
+            transform: scale(0.96) !important;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.4), 0 0 35px rgba(149,255,102,0.5) !important;
+        }
+        #pp-toggle:active {
+            transform: scale(0.92) !important;
+        }
+
+        /* --- BARRE DE SÉPARATION AMÉLIORÉE (VISIBLE) --- */
+        .divider {
+            width: 100%;
+            height: 1.5px;
+            background: rgba(255, 255, 255, 0.25);
+            margin: 25px 0;
+            position: relative;
+            box-shadow: 0 0 12px rgba(149, 255, 102, 0.15);
+        }
+    </style>
+</head>
+<body class="antialiased relative">
+
+    <div class="ambient-glow" style="top: -5%; left: -5%;"></div>
+    <div class="ambient-glow" style="bottom: -5%; right: -5%;"></div>
+
+    <!-- POPUP COOKIE -->
+    <div id="cookie-popup" class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-[420px] bg-[#000] border-2 border-[#95ff66] p-6 rounded-[20px] z-[999] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden transition-all duration-300">
+        <div id="cookie-header" class="flex items-center gap-3 mb-3 pb-2 border-b border-white/5 cursor-grab">
+            <div id="cookie-icon" class="text-[#95ff66]"><i class="fa-solid fa-cookie-bite text-3xl"></i></div>
+            <h2 id="cookie-title" class="font-display font-black text-white text-base uppercase tracking-tighter">Alerte Cookies</h2>
+            <i class="fa-solid fa-grip-lines ml-auto text-white/20"></i>
+        </div>
+        <p id="cookie-text" class="text-white/60 text-[10px] font-bold uppercase tracking-wider mb-5">Désolé chef, accorde-moi les cookies pour continuer.</p>
+        <div class="flex gap-3">
+            <button onclick="handleAccept()" class="bg-brand text-black font-black uppercase text-[11px] p-3 rounded-lg flex-1">Ok</button>
+            <button onclick="handleRefuse()" class="bg-[#151515] text-white font-black uppercase text-[11px] p-3 rounded-lg flex-1 border border-white/10">Non</button>
+        </div>
+    </div>
+
+    <!-- POPUP YOUTUBE / DISCORD (Notice travaux) -->
+    <div id="notice-popup" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[340px] bg-[#050505] border border-[#95ff66]/30 p-6 rounded-2xl z-[2000] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden opacity-0 scale-95 transition-all duration-300 flex flex-col items-center text-center">
+        <div class="w-12 h-12 rounded-full bg-[#95ff66]/10 flex items-center justify-center mb-4 border border-[#95ff66]/20 shadow-[0_0_15px_rgba(149,255,102,0.2)]">
+            <i id="notice-icon" class="fa-solid fa-person-digging text-[#95ff66] text-xl"></i>
+        </div>
+        <h3 id="notice-title" class="font-display font-black text-white text-lg uppercase tracking-tight mb-2">En chantier !</h3>
+        <p id="notice-text" class="text-white/60 text-xs font-bold leading-relaxed mb-6">Texte par défaut.</p>
+        <button onclick="closeNotice()" class="w-full bg-[#151515] text-white hover:text-[#95ff66] font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 hover:border-[#95ff66]/30 transition-all duration-300">J'ai capté</button>
+    </div>
+    <div id="notice-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1500] hidden opacity-0 transition-all duration-300" onclick="closeNotice()"></div>
+
+    <!-- POPUP DISCORD (Liste) -->
+    <div id="discord-popup" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[340px] bg-[#050505] border border-[#95ff66]/30 p-6 rounded-2xl z-[1000] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden opacity-0 scale-95 transition-all duration-300 flex flex-col items-center">
+        <div class="w-12 h-12 rounded-full bg-[#95ff66]/10 flex items-center justify-center mb-4 border border-[#95ff66]/20 shadow-[0_0_15px_rgba(149,255,102,0.2)]">
+            <i class="fa-brands fa-discord text-[#95ff66] text-xl"></i>
+        </div>
+        <h3 class="font-display font-black text-white text-lg uppercase tracking-tight mb-2">Serveurs Discord</h3>
+        <p class="text-white/60 text-xs font-bold leading-relaxed mb-6 text-center">Les accès sont actuellement limités.</p>
+
+        <div class="w-full flex flex-col gap-3 mb-6">
+            <!-- Serveur 1 : Grisé avec cadenas au survol -->
+            <button onclick="showNotice('discord')" class="relative flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/5 opacity-50 group transition-all overflow-hidden text-left">
+                <!-- Cadenas au survol -->
+                <i class="fa-solid fa-lock absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl text-brand opacity-0 group-hover:opacity-100 transition-all z-20 drop-shadow-[0_0_10px_rgba(149,255,102,0.8)]"></i>
+                
+                <div class="flex items-center gap-3 relative transition-all group-hover:opacity-10 group-hover:blur-[2px] w-full">
+                    <div class="w-10 h-10 rounded-lg bg-[#151515] text-[#555] flex items-center justify-center text-lg"><i class="fa-brands fa-discord"></i></div>
+                    <div class="flex flex-col">
+                        <span class="font-black text-sm text-[#888] uppercase">Mon Discord</span>
+                        <span class="text-[9px] text-[#666] uppercase tracking-wider">Officiel - En projet</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-lock text-[#444] text-[12px] group-hover:opacity-0 transition-all"></i>
+            </button>
+            
+            <div class="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/5 opacity-30 cursor-not-allowed">
+                <div class="flex items-center gap-3 w-full text-left">
+                    <div class="w-10 h-10 rounded-lg bg-[#0a0a0a] text-[#333] flex items-center justify-center text-lg"><i class="fa-solid fa-lock"></i></div>
+                    <div class="flex flex-col">
+                        <span class="font-black text-sm text-[#444] uppercase">Futur Serveur</span>
+                        <span class="text-[9px] text-[#333] uppercase tracking-wider">Bientôt</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="closeDiscord()" class="w-full bg-[#151515] text-white hover:text-[#95ff66] font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 transition-all duration-300">Fermer</button>
+    </div>
+    <div id="discord-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[900] hidden opacity-0 transition-all duration-300" onclick="closeDiscord()"></div>
+
+    <div class="mobile-wrapper z-10">
+        <header class="flex flex-col items-center mb-14 fade-in-up" style="animation-delay: 0.1s;">
+            <div class="relative mb-7 flex items-center justify-center z-[110]">
+                <!-- PHOTO DE PROFIL -->
+                <div id="pp-toggle" class="w-[106px] h-[106px] blob-morph bg-[#95ff66] flex items-center justify-center shadow-[0_0_22px_rgba(149,255,102,0.25)] overflow-hidden cursor-pointer transition-all duration-300 relative z-[110]" style="animation-duration: 10s;">
+                    <img src="pp.jpg" alt="PP" class="w-full h-full object-cover select-none pointer-events-none bg-brand/20">
+                </div>
+                <div id="live-badge" class="hidden absolute -bottom-1 -right-2 bg-[#95ff66] text-black font-black text-[9px] px-1.7 py-0.6 rounded z-[110]">LIVE</div>
+
+                <!-- ROUE D'ICÔNES -->
+                <div id="wheel-container" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] h-[240px] opacity-0 scale-50 pointer-events-none transition-all duration-500 z-[100]">
+                    <div class="w-full h-full animate-spin-slow relative">
+                        <!-- Spotify -->
+                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(0deg) translateY(-95px);">
+                            <div class="w-full h-full animate-counter-spin">
+                                <div class="magnetic-wrapper w-full h-full">
+                                    <div style="transform: rotate(0deg);" class="w-full h-full">
+                                        <a href="https://open.spotify.com/user/31jf2ozzv3de76gfkigykh7lnaii?si=QtnAPaLcTTWWmcWujf8rug" target="_blank" rel="noopener noreferrer" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><i class="fa-brands fa-spotify text-[16px] text-[#1DB954]"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Letterboxd -->
+                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(120deg) translateY(-95px);">
+                            <div class="w-full h-full animate-counter-spin">
+                                <div class="magnetic-wrapper w-full h-full">
+                                    <div style="transform: rotate(-120deg);" class="w-full h-full">
+                                        <a href="https://letterboxd.com/adamxbc/" target="_blank" rel="noopener noreferrer" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><svg viewBox="0 0 24 24" width="16" height="16"><circle cx="5" cy="12" r="3.5" fill="#00E054"/><circle cx="12" cy="12" r="3.5" fill="#FF8000"/><circle cx="19" cy="12" r="3.5" fill="#40BCF4"/></svg></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- MyAnimeList -->
+                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(240deg) translateY(-95px);">
+                            <div class="w-full h-full animate-counter-spin">
+                                <div class="magnetic-wrapper w-full h-full">
+                                    <div style="transform: rotate(-240deg);" class="w-full h-full flex items-center justify-center">
+                                        <a href="https://myanimelist.net/profile/adamxbc" target="_blank" rel="noopener noreferrer" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]">
+                                            <span class="font-black text-[9px] text-[#4274EA] leading-none">MAL</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h1 class="text-[3.4rem] md:text-[4.1rem] font-display font-black tracking-tighter uppercase leading-none glow-title py-2.5 text-center">ADAMXBC</h1>
+            <p class="text-white font-black uppercase mt-2.5 text-[11px] tracking-[0.16em] opacity-40 text-center">WSH Y'A TOUS MES LIENS ICI !</p>
+        </header>
+
+        <main class="flex flex-col gap-5 w-full">
+            <a href="https://instagram.com/adamxbc" target="_blank" rel="noopener noreferrer" class="btn-active anim-float shine-1 flex items-center justify-between fade-in-up group" style="animation-delay: 0.2s;">
+                <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 13s;"><i class="fa-brands fa-instagram"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">INSTAGRAM</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
+            </a>
+
+            <a href="https://twitch.tv/adamxbc" target="_blank" rel="noopener noreferrer" class="btn-active anim-float shine-2 flex items-center justify-between fade-in-up group" style="animation-delay: 0.3s;">
+                <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 15s;"><i class="fa-brands fa-twitch"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TWITCH</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
+            </a>
+
+            <a href="https://www.tiktok.com/@adamxbc" target="_blank" rel="noopener noreferrer" class="btn-active anim-float shine-3 flex items-center justify-between fade-in-up group" style="animation-delay: 0.4s;">
+                <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 12s;"><i class="fa-brands fa-tiktok"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TIKTOK</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
+            </a>
+
+            <!-- BOUTON DISCORD -->
+            <div onclick="openDiscord()" class="btn-inverted anim-float shine-inverted flex items-center fade-in-up group mt-2" style="animation-delay: 0.45s;">
+                <div class="flex items-center gap-6 text-left w-full">
+                    <div class="icon-blob-inverted blob-morph flex items-center justify-center shrink-0" style="animation-duration: 14s;"><i class="fa-brands fa-discord"></i></div>
+                    <span class="font-black text-[17px] uppercase tracking-wider leading-none">DISCORD</span>
+                </div>
+            </div>
+
+            <!-- BARRE DE SÉPARATION (VISIBLE) -->
+            <div class="divider fade-in-up" style="animation-delay: 0.5s;"></div>
+
+            <!-- BOUTON YOUTUBE -->
+            <div onclick="showNotice('ytb')" class="btn-disabled flex items-center justify-between fade-in-up group" style="animation-delay: 0.6s;">
+                <canvas id="ytb-matrix" class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none"></canvas>
+                <i class="fa-solid fa-lock absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl text-brand opacity-0 group-hover:opacity-100 transition-all z-20"></i>
+                <div class="flex items-center gap-6 relative transition-all group-hover:opacity-10 group-hover:blur-[2px] w-full text-left">
+                    <div class="icon-blob bg-[#050505] text-[#555] border border-white/5 w-10 h-10 flex items-center justify-center rounded-xl"><i class="fa-brands fa-youtube"></i></div>
+                    <div class="flex items-center justify-between w-full pr-1">
+                        <span class="font-black text-[15.5px] uppercase text-[#666]">YOUTUBE</span>
+                        <span class="text-[9px] font-black bg-[#95ff66]/10 text-brand border border-[#95ff66]/30 px-2.5 py-1 rounded-md uppercase">Bientôt</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- POPUPS GENERIC ---
+        const noticePopup = document.getElementById('notice-popup');
+        const noticeOverlay = document.getElementById('notice-overlay');
+        const noticeTitle = document.getElementById('notice-title');
+        const noticeText = document.getElementById('notice-text');
+        const noticeIcon = document.getElementById('notice-icon');
+
+        function showNotice(type) {
+            if(type === 'ytb') {
+                noticeTitle.innerText = "YouTube en chantier !";
+                noticeText.innerText = "La chaîne est en préparation. Ça arrive bientôt chef !";
+                noticeIcon.className = "fa-solid fa-person-digging text-brand text-xl";
+            } else {
+                noticeTitle.innerText = "Discord en travaux !";
+                noticeText.innerText = "Le serveur est en cours de configuration. Un peu de patience !";
+                noticeIcon.className = "fa-brands fa-discord text-brand text-xl";
+            }
+            noticePopup.classList.remove('hidden');
+            noticeOverlay.classList.remove('hidden');
+            setTimeout(() => {
+                noticePopup.classList.remove('opacity-0', 'scale-95');
+                noticeOverlay.classList.remove('opacity-0');
+            }, 10);
+        }
+
+        function closeNotice() {
+            noticePopup.classList.add('opacity-0', 'scale-95');
+            noticeOverlay.classList.add('opacity-0');
+            setTimeout(() => {
+                noticePopup.classList.add('hidden');
+                noticeOverlay.classList.add('hidden');
+            }, 300);
+        }
+
+        // --- DISCORD POPUP ---
+        const dPopup = document.getElementById('discord-popup');
+        const dOverlay = document.getElementById('discord-overlay');
+        function openDiscord() {
+            dPopup.classList.remove('hidden');
+            dOverlay.classList.remove('hidden');
+            setTimeout(() => { dPopup.classList.remove('opacity-0', 'scale-95'); dOverlay.classList.remove('opacity-0'); }, 10);
+        }
+        function closeDiscord() {
+            dPopup.classList.add('opacity-0', 'scale-95');
+            dOverlay.classList.add('opacity-0');
+            setTimeout(() => { dPopup.classList.add('hidden'); dOverlay.classList.add('hidden'); }, 300);
+        }
+
+        // --- COOKIES ---
+        const cookiePopup = document.getElementById('cookie-popup');
+        window.addEventListener('load', () => {
+            if (!localStorage.getItem('cookies_v8')) {
+                setTimeout(() => { cookiePopup.classList.remove('hidden'); }, 1500);
+            }
+        });
+        function handleAccept() { 
+            const audio = new Audio('accept_cookies.mp3');
+            audio.play().catch(e => console.log("Audio non trouvé"));
+            localStorage.setItem('cookies_v8', 'true'); 
+            cookiePopup.classList.add('hidden'); 
+        }
+        function handleRefuse() { document.getElementById('cookie-text').innerText = "Tu joues à quoi ? Clique sur Ok !"; }
+
+        // --- WHEEL TOGGLE ---
+        const wheel = document.getElementById('wheel-container');
+        const ppToggle = document.getElementById('pp-toggle');
+        
+        ppToggle.addEventListener('click', (e) => {
+            const isHidden = wheel.classList.contains('opacity-0');
+            if(isHidden) {
+                wheel.classList.remove('opacity-0', 'scale-50', 'pointer-events-none');
+            } else {
+                wheel.classList.add('opacity-0', 'scale-50', 'pointer-events-none');
+            }
+        });
+
+        // --- EFFET MAGNÉTIQUE STABILISÉ ---
+        const magneticWrappers = document.querySelectorAll('.magnetic-wrapper');
+        let mX = 0, mY = 0;
+        document.addEventListener('mousemove', (e) => { mX = e.clientX; mY = e.clientY; });
+
+        function renderMagnetic() {
+            if (!wheel.classList.contains('opacity-0')) {
+                magneticWrappers.forEach(w => {
+                    // FIX : On prend le parent comme référence de centre car il ne bouge pas
+                    const r = w.parentElement.getBoundingClientRect();
+                    const centerX = r.left + r.width / 2;
+                    const centerY = r.top + r.height / 2;
+                    const dx = mX - centerX;
+                    const dy = mY - centerY;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    // Attraction dans un rayon de 80px
+                    if (dist < 80) {
+                        // Translation douce vers la souris (35% de la distance)
+                        w.style.transform = `translate(${dx * 0.35}px, ${dy * 0.35}px)`;
+                    } else {
+                        w.style.transform = `translate(0, 0)`;
+                    }
+                });
+            }
+            requestAnimationFrame(renderMagnetic);
+        }
+        renderMagnetic();
+
+        // --- MATRIX YTB ---
+        const c = document.getElementById('ytb-matrix');
+        const ctx = c.getContext('2d');
+        let drops = [];
+        function initM() {
+            if(c) {
+                c.width = c.parentElement.offsetWidth;
+                c.height = c.parentElement.offsetHeight;
+                drops = Array(Math.floor(c.width/8)).fill(0);
+            }
+        }
+        window.addEventListener('resize', initM);
+        initM();
+        function drawM() {
+            if(!ctx) return;
+            ctx.fillStyle = 'rgba(15,15,15,0.3)'; ctx.fillRect(0,0,c.width,c.height);
+            ctx.fillStyle = 'rgba(149,255,102,0.5)'; ctx.font = '8px monospace';
+            drops.forEach((y, i) => {
+                ctx.fillText(Math.random() > 0.5 ? "1" : "0", i*8, y*8);
+                if(y*8 > c.height && Math.random() > 0.98) drops[i] = 0;
+                else drops[i]++;
+            });
+        }
+        setInterval(drawM, 130);
+    </script>
+</body>
+</html>
