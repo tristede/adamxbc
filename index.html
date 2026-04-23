@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADAMXBC | Liens</title>
+    <title>ADAMXBC | Linktree</title>
     
+    <!-- Favicon Y2K Étoile Verte -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%2395ff66' d='M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z'/></svg>">
+
     <!-- Polices -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -339,17 +342,17 @@
     <div class="mobile-wrapper z-10">
         <header class="flex flex-col items-center mb-14 fade-in-up" style="animation-delay: 0.1s;">
             <div class="relative mb-7 flex items-center justify-center z-[110]">
-                <!-- PHOTO DE PROFIL -->
-                <div id="pp-toggle" class="w-[106px] h-[106px] blob-morph bg-[#95ff66] flex items-center justify-center shadow-[0_0_22px_rgba(149,255,102,0.25)] overflow-hidden cursor-pointer transition-all duration-300 relative z-[110]" style="animation-duration: 10s;">
+                <!-- PHOTO DE PROFIL AGRANDIE (135px) -->
+                <div id="pp-toggle" class="w-[135px] h-[135px] blob-morph bg-[#95ff66] flex items-center justify-center shadow-[0_0_22px_rgba(149,255,102,0.25)] overflow-hidden cursor-pointer transition-all duration-300 relative z-[110]" style="animation-duration: 10s;">
                     <img src="pp.jpg" alt="PP" class="w-full h-full object-cover select-none pointer-events-none bg-brand/20">
                 </div>
                 <div id="live-badge" class="hidden absolute -bottom-1 -right-2 bg-[#95ff66] text-black font-black text-[9px] px-1.7 py-0.6 rounded z-[110]">LIVE</div>
 
                 <!-- ROUE D'ICÔNES -->
-                <div id="wheel-container" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] h-[240px] opacity-0 scale-50 pointer-events-none transition-all duration-500 z-[100]">
+                <div id="wheel-container" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] opacity-0 scale-50 pointer-events-none transition-all duration-500 z-[100]">
                     <div class="w-full h-full animate-spin-slow relative">
                         <!-- Spotify -->
-                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(0deg) translateY(-95px);">
+                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(0deg) translateY(-110px);">
                             <div class="w-full h-full animate-counter-spin">
                                 <div class="magnetic-wrapper w-full h-full">
                                     <div style="transform: rotate(0deg);" class="w-full h-full">
@@ -359,7 +362,7 @@
                             </div>
                         </div>
                         <!-- Letterboxd -->
-                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(120deg) translateY(-95px);">
+                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(120deg) translateY(-110px);">
                             <div class="w-full h-full animate-counter-spin">
                                 <div class="magnetic-wrapper w-full h-full">
                                     <div style="transform: rotate(-120deg);" class="w-full h-full">
@@ -369,7 +372,7 @@
                             </div>
                         </div>
                         <!-- MyAnimeList -->
-                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(240deg) translateY(-95px);">
+                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(240deg) translateY(-110px);">
                             <div class="w-full h-full animate-counter-spin">
                                 <div class="magnetic-wrapper w-full h-full">
                                     <div style="transform: rotate(-240deg);" class="w-full h-full flex items-center justify-center">
@@ -409,7 +412,7 @@
                 </div>
             </div>
 
-            <!-- BARRE DE SÉPARATION (VISIBLE) -->
+            <!-- BARRE DE SÉPARATION -->
             <div class="divider fade-in-up" style="animation-delay: 0.5s;"></div>
 
             <!-- BOUTON YOUTUBE -->
@@ -428,6 +431,11 @@
     </div>
 
     <script>
+        // --- PRÉCHARGEMENT AUDIO ---
+        const acceptAudio = new Audio('accept_cookies.mp3');
+        acceptAudio.preload = 'auto';
+        acceptAudio.load(); // Démarre le chargement immédiatement
+
         // --- POPUPS GENERIC ---
         const noticePopup = document.getElementById('notice-popup');
         const noticeOverlay = document.getElementById('notice-overlay');
@@ -479,16 +487,17 @@
         // --- COOKIES ---
         const cookiePopup = document.getElementById('cookie-popup');
         window.addEventListener('load', () => {
-            if (!localStorage.getItem('cookies_v8')) {
+            if (!localStorage.getItem('cookies_v9')) {
                 setTimeout(() => { cookiePopup.classList.remove('hidden'); }, 1500);
             }
         });
+
         function handleAccept() { 
-            const audio = new Audio('accept_cookies.mp3');
-            audio.play().catch(e => console.log("Audio non trouvé"));
-            localStorage.setItem('cookies_v8', 'true'); 
+            acceptAudio.play().catch(e => console.log("Audio bloqué ou non trouvé"));
+            localStorage.setItem('cookies_v9', 'true'); 
             cookiePopup.classList.add('hidden'); 
         }
+
         function handleRefuse() { document.getElementById('cookie-text').innerText = "Tu joues à quoi ? Clique sur Ok !"; }
 
         // --- WHEEL TOGGLE ---
@@ -504,7 +513,7 @@
             }
         });
 
-        // --- EFFET MAGNÉTIQUE STABILISÉ ---
+        // --- EFFET MAGNÉTIQUE ---
         const magneticWrappers = document.querySelectorAll('.magnetic-wrapper');
         let mX = 0, mY = 0;
         document.addEventListener('mousemove', (e) => { mX = e.clientX; mY = e.clientY; });
@@ -512,7 +521,6 @@
         function renderMagnetic() {
             if (!wheel.classList.contains('opacity-0')) {
                 magneticWrappers.forEach(w => {
-                    // FIX : On prend le parent comme référence de centre car il ne bouge pas
                     const r = w.parentElement.getBoundingClientRect();
                     const centerX = r.left + r.width / 2;
                     const centerY = r.top + r.height / 2;
@@ -520,9 +528,7 @@
                     const dy = mY - centerY;
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     
-                    // Attraction dans un rayon de 80px
                     if (dist < 80) {
-                        // Translation douce vers la souris (35% de la distance)
                         w.style.transform = `translate(${dx * 0.35}px, ${dy * 0.35}px)`;
                     } else {
                         w.style.transform = `translate(0, 0)`;
