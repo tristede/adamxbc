@@ -22,243 +22,52 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        brand: '#95ff66',
-                    },
-                    fontFamily: {
-                        display: ['Outfit', 'sans-serif'],
-                        body: ['Inter', 'sans-serif'],
-                    },
-                    animation: {
-                        'spin-slow': 'spin 60s linear infinite',
-                        'counter-spin': 'counter-spin 60s linear infinite',
-                    },
-                    keyframes: {
-                        'counter-spin': {
-                            from: { transform: 'rotate(0deg)' },
-                            to: { transform: 'rotate(-360deg)' },
-                        }
-                    }
+                    colors: { brand: '#95ff66' },
+                    fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'] },
+                    animation: { 'spin-slow': 'spin 60s linear infinite', 'counter-spin': 'counter-spin 60s linear infinite' },
+                    keyframes: { 'counter-spin': { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(-360deg)' } } }
                 }
             }
         }
     </script>
     
     <style>
-        body {
-            background-color: #030005; 
-            margin: 0;
-            color: #ffffff;
-            overflow-x: hidden;
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* --- GLOW AMBIANT --- */
-        .ambient-glow {
-            position: fixed;
-            width: 55vw; 
-            height: 55vw;
-            background: radial-gradient(circle, rgba(149,255,102,0.03) 0%, rgba(0,0,0,0) 70%);
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* --- ANIMATIONS DE BASE --- */
-        .fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translate(var(--drag-x, 0px), calc(var(--drag-y, 0px) + 17px)); } 
-            to { opacity: 1; transform: translate(var(--drag-x, 0px), var(--drag-y, 0px)); }
-        }
-
-        .blob-morph {
-            border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%;
-            animation: morph 12s ease-in-out infinite;
-        }
-
-        @keyframes morph {
-            0%   { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; }
-            33%  { border-radius: 65% 35% 55% 45% / 55% 65% 35% 45%; }
-            66%  { border-radius: 40% 60% 30% 70% / 60% 40% 70% 30%; }
-            100% { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; }
-        }
-
-        /* --- REFLET DU TITRE (PIXEL ART) --- */
-        .glow-title {
-            background: linear-gradient(
-                110deg,
-                #ffffff 0%,
-                #ffffff 45%,
-                #b0b5b9 45%, #b0b5b9 48%, 
-                #ffffff 48%, #ffffff 50%, 
-                #b0b5b9 50%, #b0b5b9 52%, 
-                #ffffff 52%, #ffffff 100%
-            );
-            background-size: 400% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(149, 255, 102, 0.4));
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-            animation: textShine 5s steps(25) infinite;
-        }
-
-        @keyframes textShine {
-            0% { background-position: 100% center; } 
-            40% { background-position: 0% center; }  
-            100% { background-position: 0% center; } 
-        }
-
-        /* --- BOUTONS --- */
-        .btn-active {
-            background-color: #95ff66; 
-            color: #000;
-            border-radius: 18px; 
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 4.4px 11px rgba(149, 255, 102, 0.1);
-            padding: 18px 24px; 
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-active:hover {
-            transform: translateY(-2.2px) scale(1.02) !important;
-            box-shadow: 0 0 33px rgba(149, 255, 102, 0.4);
-            background-color: #b3ff8c;
-        }
-
-        /* --- REFLETS SUR LES BOUTONS (PIXEL ART) --- */
-        .btn-active::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100px;
-            width: 50px;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent 0%,
-                rgba(220, 255, 180, 0.9) 0%, rgba(220, 255, 180, 0.9) 40%,
-                transparent 40%, transparent 60%,
-                rgba(220, 255, 180, 0.5) 60%, rgba(220, 255, 180, 0.5) 80%,
-                transparent 80%
-            );
-            transform: skewX(-25deg);
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        @keyframes btnShine1 { 0% { left: -100px; } 25% { left: 120%; } 100% { left: 120%; } }
-        @keyframes btnShine2 { 0% { left: -100px; } 20% { left: 120%; } 100% { left: 120%; } }
-        @keyframes btnShine3 { 0% { left: -100px; } 28% { left: 120%; } 100% { left: 120%; } }
-
+        body { background-color: #030005; margin: 0; color: #ffffff; overflow-x: hidden; font-family: 'Inter', sans-serif; }
+        .ambient-glow { position: fixed; width: 55vw; height: 55vw; background: radial-gradient(circle, rgba(149,255,102,0.03) 0%, rgba(0,0,0,0) 70%); z-index: 0; pointer-events: none; }
+        .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translate(var(--drag-x, 0px), calc(var(--drag-y, 0px) + 17px)); } to { opacity: 1; transform: translate(var(--drag-x, 0px), var(--drag-y, 0px)); } }
+        .blob-morph { border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%; animation: morph 12s ease-in-out infinite; }
+        @keyframes morph { 0% { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; } 33% { border-radius: 65% 35% 55% 45% / 55% 65% 35% 45%; } 66% { border-radius: 40% 60% 30% 70% / 60% 40% 70% 30%; } 100% { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; } }
+        .glow-title { background: linear-gradient(110deg, #ffffff 0%, #ffffff 45%, #b0b5b9 45%, #b0b5b9 48%, #ffffff 48%, #ffffff 50%, #b0b5b9 50%, #b0b5b9 52%, #ffffff 52%, #ffffff 100%); background-size: 400% auto; color: transparent; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px rgba(149, 255, 102, 0.4)); animation: textShine 5s steps(25) infinite; }
+        @keyframes textShine { 0% { background-position: 100% center; } 40% { background-position: 0% center; } 100% { background-position: 0% center; } }
+        .btn-active { background-color: #95ff66; color: #000; border-radius: 18px; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 4.4px 11px rgba(149, 255, 102, 0.1); padding: 18px 24px; position: relative; overflow: hidden; }
+        .btn-active:hover { transform: translateY(-2.2px) scale(1.02) !important; box-shadow: 0 0 33px rgba(149, 255, 102, 0.4); background-color: #b3ff8c; }
+        .btn-active::after { content: ''; position: absolute; top: 0; left: -100px; width: 50px; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(220, 255, 180, 0.9) 0%, rgba(220, 255, 180, 0.9) 40%, transparent 40%, transparent 60%, rgba(220, 255, 180, 0.5) 60%, rgba(220, 255, 180, 0.5) 80%, transparent 80%); transform: skewX(-25deg); pointer-events: none; z-index: 10; }
         .shine-1::after { animation: btnShine1 6.5s steps(20) infinite; }
         .shine-2::after { animation: btnShine2 8.2s steps(20) infinite 1.5s; }
         .shine-3::after { animation: btnShine3 7.4s steps(20) infinite 0.8s; }
-
-        /* --- BOUTON DISCORD --- */
-        .btn-inverted {
-            background-color: #050505; 
-            color: #95ff66;
-            border: 2px solid #95ff66;
-            border-radius: 18px; 
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 4.4px 11px rgba(149, 255, 102, 0.1), inset 0 0 15px rgba(149, 255, 102, 0.05);
-            padding: 27px 24px; 
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .btn-inverted:hover {
-            transform: translateY(-2.2px) scale(1.02) !important;
-            box-shadow: 0 0 33px rgba(149, 255, 102, 0.4), inset 0 0 20px rgba(149, 255, 102, 0.15);
-            background-color: #0a0a0a;
-        }
-
-        .btn-inverted::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100px;
-            width: 50px;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent 0%,
-                rgba(149, 255, 102, 0.8) 0%, rgba(149, 255, 102, 0.8) 40%,
-                transparent 40%, transparent 60%,
-                rgba(149, 255, 102, 0.4) 60%, rgba(149, 255, 102, 0.4) 80%,
-                transparent 80%
-            );
-            transform: skewX(-25deg);
-            pointer-events: none;
-            z-index: 10;
-        }
+        @keyframes btnShine1 { 0% { left: -100px; } 25% { left: 120%; } 100% { left: 120%; } }
+        .btn-inverted { background-color: #050505; color: #95ff66; border: 2px solid #95ff66; border-radius: 18px; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 4.4px 11px rgba(149, 255, 102, 0.1), inset 0 0 15px rgba(149, 255, 102, 0.05); padding: 27px 24px; position: relative; overflow: hidden; cursor: pointer; }
+        .btn-inverted:hover { transform: translateY(-2.2px) scale(1.02) !important; box-shadow: 0 0 33px rgba(149, 255, 102, 0.4), inset 0 0 20px rgba(149, 255, 102, 0.15); background-color: #0a0a0a; }
+        .btn-inverted::after { content: ''; position: absolute; top: 0; left: -100px; width: 50px; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(149, 255, 102, 0.8) 0%, rgba(149, 255, 102, 0.8) 40%, transparent 40%, transparent 60%, rgba(149, 255, 102, 0.4) 60%, rgba(149, 255, 102, 0.4) 80%, transparent 80%); transform: skewX(-25deg); pointer-events: none; z-index: 10; }
         .shine-inverted::after { animation: btnShine1 7.5s steps(20) infinite 2s; }
-
-        .icon-blob-inverted {
-            width: 44px; 
-            height: 44px;
-            background: #95ff66;
-            color: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px; 
-            flex-shrink: 0;
-        }
-
+        .icon-blob-inverted { width: 44px; height: 44px; background: #95ff66; color: #000; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
         .anim-float { animation: float 6s ease-in-out infinite; }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-2.5px); } 
-        }
-
-        .btn-disabled {
-            background-color: #0f0f0f;
-            color: #444;
-            border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 18px 24px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .icon-blob {
-            width: 40px; 
-            height: 40px;
-            background: #000;
-            color: #95ff66;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px; 
-            flex-shrink: 0;
-        }
-
-        .mobile-wrapper {
-            max-width: 440px; 
-            margin: 0 auto;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding: 55px 22px; 
-            position: relative;
-        }
-
-        /* --- POPUP COOKIE DÉPLAÇABLE --- */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
+        .btn-disabled { background-color: #0f0f0f; color: #444; border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); padding: 18px 24px; cursor: pointer; position: relative; overflow: hidden; }
+        .icon-blob { width: 40px; height: 40px; background: #000; color: #95ff66; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .mobile-wrapper { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 55px 22px; position: relative; }
+        
+        /* --- POPUP COOKIE DÉPLAÇABLE (CORRIGÉ) --- */
         #cookie-popup {
             --drag-x: 0px;
             --drag-y: 0px;
             position: fixed;
             bottom: 8%;
-            left: 50%;
-            /* Le transform intègre le centrage initial (-50%) + les variables de drag */
-            transform: translate(calc(-50% + var(--drag-x)), var(--drag-y));
+            left: 0;
+            right: 0;
+            margin: 0 auto; /* Remplace le transform -50% pour ne pas bugger avec l'animation fade-in-up */
+            transform: translate(var(--drag-x), var(--drag-y));
             width: 90%;
             max-width: 420px;
             background-color: #000;
@@ -268,50 +77,16 @@
             z-index: 999;
             box-shadow: 0 0 40px rgba(0,0,0,0.9);
             display: none;
-            touch-action: none; /* Empêche le scroll pendant le drag sur mobile */
+            touch-action: none; 
         }
 
-        #cookie-header {
-            cursor: grab;
-            user-select: none;
-        }
-        
-        #cookie-header:active {
-            cursor: grabbing;
-        }
-
-        /* --- HOVER EFFET PP (RENFONCEMENT SANS GLOW) --- */
-        #pp-toggle:hover {
-            transform: scale(0.96) !important;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.4) !important;
-        }
-        #pp-toggle:active {
-            transform: scale(0.92) !important;
-        }
-
-        /* --- ANIMATION DE L'IMAGE DANS LE BLOB --- */
-        #pp-toggle img {
-            transition: transform 0.5s ease-out;
-            animation: imageFloat 14s ease-in-out infinite;
-            transform: scale(1.1); 
-        }
-
-        @keyframes imageFloat {
-            0%, 100% { transform: scale(1.1) translate(0, 0); }
-            25% { transform: scale(1.15) translate(5px, -5px); }
-            50% { transform: scale(1.1) translate(-3px, 5px); }
-            75% { transform: scale(1.12) translate(-5px, -3px); }
-        }
-
-        /* --- BARRE DE SÉPARATION AMÉLIORÉE (VISIBLE) --- */
-        .divider {
-            width: 100%;
-            height: 1.5px;
-            background: rgba(255, 255, 255, 0.25);
-            margin: 25px 0;
-            position: relative;
-            box-shadow: 0 0 12px rgba(149, 255, 102, 0.15);
-        }
+        #cookie-header { cursor: grab; user-select: none; }
+        #cookie-header:active { cursor: grabbing; }
+        #pp-toggle:hover { transform: scale(0.96) !important; box-shadow: inset 0 0 20px rgba(0,0,0,0.4) !important; }
+        #pp-toggle:active { transform: scale(0.92) !important; }
+        #pp-toggle img { transition: transform 0.5s ease-out; animation: imageFloat 14s ease-in-out infinite; transform: scale(1.1); }
+        @keyframes imageFloat { 0%, 100% { transform: scale(1.1) translate(0, 0); } 25% { transform: scale(1.15) translate(5px, -5px); } 50% { transform: scale(1.1) translate(-3px, 5px); } 75% { transform: scale(1.12) translate(-5px, -3px); } }
+        .divider { width: 100%; height: 1.5px; background: rgba(255, 255, 255, 0.25); margin: 25px 0; position: relative; box-shadow: 0 0 12px rgba(149, 255, 102, 0.15); }
     </style>
 </head>
 <body class="antialiased relative">
@@ -333,7 +108,7 @@
         </div>
     </div>
 
-    <!-- POPUP YOUTUBE / DISCORD (Notice travaux) -->
+    <!-- NOTICE POPUP -->
     <div id="notice-popup" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[340px] bg-[#050505] border border-[#95ff66]/30 p-6 rounded-2xl z-[2000] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden opacity-0 scale-95 transition-all duration-300 flex flex-col items-center text-center">
         <div class="w-12 h-12 rounded-full bg-[#95ff66]/10 flex items-center justify-center mb-4 border border-[#95ff66]/20 shadow-[0_0_15px_rgba(149,255,102,0.2)]">
             <i id="notice-icon" class="fa-solid fa-person-digging text-[#95ff66] text-xl"></i>
@@ -344,20 +119,16 @@
     </div>
     <div id="notice-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1500] hidden opacity-0 transition-all duration-300" onclick="closeNotice()"></div>
 
-    <!-- POPUP DISCORD (Liste) -->
+    <!-- DISCORD POPUP -->
     <div id="discord-popup" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[340px] bg-[#050505] border border-[#95ff66]/30 p-6 rounded-2xl z-[1000] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden opacity-0 scale-95 transition-all duration-300 flex flex-col items-center">
         <div class="w-12 h-12 rounded-full bg-[#95ff66]/10 flex items-center justify-center mb-4 border border-[#95ff66]/20 shadow-[0_0_15px_rgba(149,255,102,0.2)]">
             <i class="fa-brands fa-discord text-[#95ff66] text-xl"></i>
         </div>
         <h3 class="font-display font-black text-white text-lg uppercase tracking-tight mb-2">Serveurs Discord</h3>
         <p class="text-white/60 text-xs font-bold leading-relaxed mb-6 text-center">Les accès sont actuellement limités.</p>
-
         <div class="w-full flex flex-col gap-3 mb-6">
-            <!-- Serveur 1 : Grisé avec cadenas au survol -->
             <button onclick="showNotice('discord')" data-track="Alerte Lock Discord lue" class="relative flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/5 opacity-50 group transition-all overflow-hidden text-left">
-                <!-- Cadenas au survol -->
                 <i class="fa-solid fa-lock absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl text-brand opacity-0 group-hover:opacity-100 transition-all z-20 drop-shadow-[0_0_10px_rgba(149,255,102,0.8)]"></i>
-                
                 <div class="flex items-center gap-3 relative transition-all group-hover:opacity-10 group-hover:blur-[2px] w-full">
                     <div class="w-10 h-10 rounded-lg bg-[#151515] text-[#555] flex items-center justify-center text-lg"><i class="fa-brands fa-discord"></i></div>
                     <div class="flex flex-col">
@@ -365,9 +136,7 @@
                         <span class="text-[9px] text-[#666] uppercase tracking-wider">Officiel - En projet</span>
                     </div>
                 </div>
-                <i class="fa-solid fa-lock text-[#444] text-[12px] group-hover:opacity-0 transition-all"></i>
             </button>
-            
             <div class="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/5 opacity-30 cursor-not-allowed">
                 <div class="flex items-center gap-3 w-full text-left">
                     <div class="w-10 h-10 rounded-lg bg-[#0a0a0a] text-[#333] flex items-center justify-center text-lg"><i class="fa-solid fa-lock"></i></div>
@@ -378,7 +147,6 @@
                 </div>
             </div>
         </div>
-
         <button onclick="closeDiscord()" class="w-full bg-[#151515] text-white hover:text-[#95ff66] font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 transition-all duration-300">Fermer</button>
     </div>
     <div id="discord-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[900] hidden opacity-0 transition-all duration-300" onclick="closeDiscord()"></div>
@@ -386,80 +154,52 @@
     <div class="mobile-wrapper z-10">
         <header class="flex flex-col items-center mb-14 fade-in-up" style="animation-delay: 0.1s;">
             <div class="relative mb-7 flex items-center justify-center z-[110]">
-                <!-- PHOTO DE PROFIL AGRANDIE (135px) + Contour 2px Vert -->
+                <!-- PHOTO DE PROFIL -->
                 <div id="pp-toggle" class="w-[135px] h-[135px] blob-morph bg-[#050505] border-2 border-brand flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300 relative z-[110]" style="animation-duration: 10s;">
                     <img src="pp.jpg" alt="PP" class="w-full h-full object-cover select-none pointer-events-none">
                 </div>
                 <div id="live-badge" class="hidden absolute -bottom-1 -right-2 bg-[#95ff66] text-black font-black text-[9px] px-1.7 py-0.6 rounded z-[110]">LIVE</div>
-
-                <!-- ROUE D'ICÔNES -->
                 <div id="wheel-container" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] opacity-0 scale-50 pointer-events-none transition-all duration-500 z-[100]">
                     <div class="w-full h-full animate-spin-slow relative">
-                        <!-- Spotify -->
                         <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(0deg) translateY(-110px);">
                             <div class="w-full h-full animate-counter-spin">
-                                <div class="magnetic-wrapper w-full h-full">
-                                    <div style="transform: rotate(0deg);" class="w-full h-full">
-                                        <a href="https://open.spotify.com/user/31jf2ozzv3de76gfkigykh7lnaii?si=QtnAPaLcTTWWmcWujf8rug" target="_blank" rel="noopener noreferrer" data-track="Spotify" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><i class="fa-brands fa-spotify text-[16px] text-[#1DB954]"></i></a>
-                                    </div>
-                                </div>
+                                <div class="magnetic-wrapper w-full h-full"><div style="transform: rotate(0deg);" class="w-full h-full"><a href="https://open.spotify.com/user/31jf2ozzv3de76gfkigykh7lnaii?si=QtnAPaLcTTWWmcWujf8rug" target="_blank" data-track="Spotify" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><i class="fa-brands fa-spotify text-[16px] text-[#1DB954]"></i></a></div></div>
                             </div>
                         </div>
-                        <!-- Letterboxd -->
                         <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(120deg) translateY(-110px);">
                             <div class="w-full h-full animate-counter-spin">
-                                <div class="magnetic-wrapper w-full h-full">
-                                    <div style="transform: rotate(-120deg);" class="w-full h-full">
-                                        <a href="https://letterboxd.com/adamxbc/" target="_blank" rel="noopener noreferrer" data-track="Letterboxd" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><svg viewBox="0 0 24 24" width="16" height="16"><circle cx="5" cy="12" r="3.5" fill="#00E054"/><circle cx="12" cy="12" r="3.5" fill="#FF8000"/><circle cx="19" cy="12" r="3.5" fill="#40BCF4"/></svg></a>
-                                    </div>
-                                </div>
+                                <div class="magnetic-wrapper w-full h-full"><div style="transform: rotate(-120deg);" class="w-full h-full"><a href="https://letterboxd.com/adamxbc/" target="_blank" data-track="Letterboxd" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><svg viewBox="0 0 24 24" width="16" height="16"><circle cx="5" cy="12" r="3.5" fill="#00E054"/><circle cx="12" cy="12" r="3.5" fill="#FF8000"/><circle cx="19" cy="12" r="3.5" fill="#40BCF4"/></svg></a></div></div>
                             </div>
                         </div>
-                        <!-- MyAnimeList -->
                         <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(240deg) translateY(-110px);">
                             <div class="w-full h-full animate-counter-spin">
-                                <div class="magnetic-wrapper w-full h-full">
-                                    <div style="transform: rotate(-240deg);" class="w-full h-full flex items-center justify-center">
-                                        <a href="https://myanimelist.net/profile/adamxbc" target="_blank" rel="noopener noreferrer" data-track="MAL" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]">
-                                            <span class="font-black text-[9px] text-[#4274EA] leading-none">MAL</span>
-                                        </a>
-                                    </div>
-                                </div>
+                                <div class="magnetic-wrapper w-full h-full"><div style="transform: rotate(-240deg);" class="w-full h-full flex items-center justify-center"><a href="https://myanimelist.net/profile/adamxbc" target="_blank" data-track="MAL" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><span class="font-black text-[9px] text-[#4274EA] leading-none">MAL</span></a></div></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
             <h1 class="text-[3.4rem] md:text-[4.1rem] font-display font-black tracking-tighter uppercase leading-none glow-title py-2.5 text-center">ADAMXBC</h1>
             <p class="text-white font-black uppercase mt-2.5 text-[11px] tracking-[0.16em] opacity-40 text-center">WSH Y'A TOUS MES LIENS ICI !</p>
         </header>
 
         <main class="flex flex-col gap-5 w-full">
-            <a href="https://instagram.com/adamxbc" target="_blank" rel="noopener noreferrer" data-track="Instagram" class="btn-active anim-float shine-1 flex items-center justify-between fade-in-up group" style="animation-delay: 0.2s;">
+            <a href="https://instagram.com/adamxbc" target="_blank" data-track="Instagram" class="btn-active anim-float shine-1 flex items-center justify-between fade-in-up group" style="animation-delay: 0.2s;">
                 <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 13s;"><i class="fa-brands fa-instagram"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">INSTAGRAM</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </a>
-
-            <a href="https://twitch.tv/adamxbc" target="_blank" rel="noopener noreferrer" data-track="Twitch" class="btn-active anim-float shine-2 flex items-center justify-between fade-in-up group" style="animation-delay: 0.3s;">
+            <a href="https://twitch.tv/adamxbc" target="_blank" data-track="Twitch" class="btn-active anim-float shine-2 flex items-center justify-between fade-in-up group" style="animation-delay: 0.3s;">
                 <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 15s;"><i class="fa-brands fa-twitch"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TWITCH</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </a>
-
-            <a href="https://www.tiktok.com/@adamxbc" target="_blank" rel="noopener noreferrer" data-track="TikTok" class="btn-active anim-float shine-3 flex items-center justify-between fade-in-up group" style="animation-delay: 0.4s;">
+            <a href="https://www.tiktok.com/@adamxbc" target="_blank" data-track="TikTok" class="btn-active anim-float shine-3 flex items-center justify-between fade-in-up group" style="animation-delay: 0.4s;">
                 <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 12s;"><i class="fa-brands fa-tiktok"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TIKTOK</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </a>
-
-            <!-- BOUTON DISCORD -->
             <div onclick="openDiscord()" data-track="Menu Discord" class="btn-inverted anim-float shine-inverted flex items-center fade-in-up group mt-2" style="animation-delay: 0.45s;">
                 <div class="flex items-center gap-6 text-left w-full">
                     <div class="icon-blob-inverted blob-morph flex items-center justify-center shrink-0" style="animation-duration: 14s;"><i class="fa-brands fa-discord"></i></div>
                     <span class="font-black text-[17px] uppercase tracking-wider leading-none">DISCORD</span>
                 </div>
             </div>
-
-            <!-- BARRE DE SÉPARATION -->
             <div class="divider fade-in-up" style="animation-delay: 0.5s;"></div>
-
-            <!-- BOUTON YOUTUBE -->
             <div onclick="showNotice('ytb')" data-track="YouTube (Bientôt)" class="btn-disabled flex items-center justify-between fade-in-up group" style="animation-delay: 0.6s;">
                 <canvas id="ytb-matrix" class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none"></canvas>
                 <i class="fa-solid fa-lock absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl text-brand opacity-0 group-hover:opacity-100 transition-all z-20"></i>
