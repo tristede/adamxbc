@@ -58,7 +58,7 @@
         .icon-blob { width: 40px; height: 40px; background: #000; color: #95ff66; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
         .mobile-wrapper { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 55px 22px; position: relative; }
         
-        /* --- POPUP COOKIE DÉPLAÇABLE (CORRIGÉ) --- */
+        /* --- POPUP COOKIE DÉPLAÇABLE --- */
         #cookie-popup {
             --drag-x: 0px;
             --drag-y: 0px;
@@ -66,7 +66,7 @@
             bottom: 8%;
             left: 0;
             right: 0;
-            margin: 0 auto; /* Remplace le transform -50% pour ne pas bugger avec l'animation fade-in-up */
+            margin: 0 auto;
             transform: translate(var(--drag-x), var(--drag-y));
             width: 90%;
             max-width: 420px;
@@ -101,10 +101,13 @@
             <h2 id="cookie-title" class="font-display font-black text-white text-base uppercase tracking-tighter">Alerte Cookies</h2>
             <i class="fa-solid fa-grip-lines ml-auto text-white/20"></i>
         </div>
-        <p id="cookie-text" class="text-white/60 text-[10px] font-bold uppercase tracking-wider mb-5">Désolé chef, accorde-moi les cookies pour continuer.</p>
+        <!-- TEXTE MODIFIÉ POUR LA LOI -->
+        <p id="cookie-text" class="text-white/60 text-[10px] font-bold uppercase tracking-wider mb-5 leading-relaxed">
+            Chef, j'utilise des traceurs pour analyser les stats du site (clics, ville). Tu valides ?
+        </p>
         <div class="flex gap-3">
-            <button onclick="handleAccept()" class="bg-brand text-black font-black uppercase text-[11px] p-3 rounded-lg flex-1">Ok</button>
-            <button onclick="handleRefuse()" class="bg-[#151515] text-white font-black uppercase text-[11px] p-3 rounded-lg flex-1 border border-white/10">Non</button>
+            <button id="btn-cookie-ok" onclick="handleAccept()" class="bg-brand text-black font-black uppercase text-[11px] p-3 rounded-lg flex-1">Ok</button>
+            <button id="btn-cookie-non" onclick="handleRefuse()" class="bg-[#151515] text-white font-black uppercase text-[11px] p-3 rounded-lg flex-1 border border-white/10">Non</button>
         </div>
     </div>
 
@@ -212,6 +215,13 @@
                 </div>
             </div>
         </main>
+        
+        <!-- Mentions légales obligatoires (RGPD) -->
+        <footer class="mt-14 text-center fade-in-up opacity-30 hover:opacity-100 transition-opacity" style="animation-delay: 0.7s;">
+            <a href="#" onclick="alert('Politique de confidentialité : Ce site utilise Firebase (Google) pour analyser de manière anonyme la provenance des visites (ville), les clics et le type d\'appareil (mobile/pc), UNIQUEMENT si vous avez cliqué sur OK. Aucune donnée personnelle nominative n\'est collectée ni revendue.\n\nÉditeur : Adamxbc'); return false;" class="text-[9px] text-white font-bold uppercase tracking-widest cursor-pointer hover:text-brand transition-colors">
+                Mentions Légales & Confidentialité
+            </a>
+        </footer>
     </div>
 
     <!-- --- LOGIQUE FIREBASE & TRACKING --- -->
@@ -262,18 +272,73 @@
             });
         };
 
-        initAnalytics();
+        // --- NOUVELLE LOGIQUE RGPD OPT-IN ---
+        const consent = localStorage.getItem('cookies_v12');
 
-        // Écoute des clics sur les boutons
-        document.addEventListener('pointerdown', (e) => {
-            const trackable = e.target.closest('[data-track]');
-            if (trackable) {
-                trackData('Clic', { element: trackable.getAttribute('data-track') });
-            }
-        });
+        // Fonction pour activer l'écoute des clics (seulement si accepté)
+        const enableTracking = () => {
+            document.addEventListener('pointerdown', (e) => {
+                const trackable = e.target.closest('[data-track]');
+                if (trackable) {
+                    trackData('Clic', { element: trackable.getAttribute('data-track') });
+                }
+            });
+            window.trackCustomEvent = (name) => trackData('Event', { name });
+        };
 
-        // Permet d'appeler le tracker pour des événements invisibles depuis d'autres scripts
-        window.trackCustomEvent = (name) => trackData('Event', { name });
+        // Si l'utilisateur avait DÉJÀ accepté lors d'une précédente visite
+        if (consent === 'true') {
+            initAnalytics();
+            enableTracking();
+        } else {
+            // Fonction vide pour éviter les erreurs JavaScript si on clique sur un truc avant d'accepter
+            window.trackCustomEvent = () => {};
+        }
+
+        // --- ACTIONS DES BOUTONS DU BANDEAU ---
+        window.handleAccept = function() { 
+            acceptAudio.play().catch(e => console.log("Audio bloqué ou non trouvé"));
+            
+            // On sauvegarde l'accord et on cache le popup
+            localStorage.setItem('cookies_v12', 'true'); 
+            document.getElementById('cookie-popup').style.display = 'none'; 
+            
+            // ON LANCE FIREBASE SEULEMENT MAINTENANT !
+            initAnalytics();
+            enableTracking();
+            
+            window.trackCustomEvent('AcceptCookies');
+        }
+
+        window.handleRefuse = function() { 
+            // On sauvegarde le refus : la loi est respectée, Firebase reste endormi.
+            localStorage.setItem('cookies_v12', 'false'); 
+            
+            // MODE TROLL ACTIVÉ
+            document.getElementById('cookie-title').style.display = 'none';
+            document.getElementById('cookie-icon').style.display = 'none';
+            document.getElementById('cookie-text').innerText = "Ok, pas de cookies c'est compris. Mais viens me follow sur twitch alors!!";
+            
+            // On modifie directement les 2 boutons existants au lieu d'en créer de nouveaux
+            const btnOk = document.getElementById('btn-cookie-ok');
+            const btnNon = document.getElementById('btn-cookie-non');
+            
+            // Modif du bouton 1 (Ok -> Follow)
+            btnOk.innerHTML = '<i class="fa-brands fa-twitch text-sm"></i> Follow';
+            btnOk.className = 'bg-brand text-black font-black uppercase text-[11px] p-3 rounded-lg flex-1 flex items-center justify-center gap-2 transition-transform hover:scale-95';
+            btnOk.onclick = function() {
+                window.open('https://twitch.tv/adamxbc', '_blank');
+                closeCookiePopup();
+            };
+
+            // Modif du bouton 2 (Non ferme juste la popup)
+            btnNon.onclick = closeCookiePopup;
+        }
+
+        window.closeCookiePopup = function() {
+            document.getElementById('cookie-popup').style.display = 'none';
+        }
+
     </script>
 
     <!-- --- LOGIQUE D'INTERFACE (AUDIO, POPUPS, ROUE, MATRIX) --- -->
@@ -324,7 +389,6 @@
                 noticeOverlay.classList.remove('opacity-0');
             }, 10);
             
-            // Tracking
             if(window.trackCustomEvent) window.trackCustomEvent('OpenNotice_'+type);
         }
 
@@ -362,7 +426,7 @@
         let initialY;
 
         function dragStart(e) {
-            if (e.target.closest('button')) return;
+            if (e.target.closest('button') || e.target.closest('a')) return;
             const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
             const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
             
@@ -402,17 +466,6 @@
             }
         });
 
-        function handleAccept() { 
-            acceptAudio.play().catch(e => console.log("Audio bloqué ou non trouvé"));
-            localStorage.setItem('cookies_v12', 'true'); 
-            cookiePopup.style.display = 'none'; 
-            
-            // Tracking
-            if(window.trackCustomEvent) window.trackCustomEvent('AcceptCookies');
-        }
-
-        function handleRefuse() { document.getElementById('cookie-text').innerText = "Tu joues à quoi ? Clique sur Ok !"; }
-
         // --- WHEEL TOGGLE ---
         const wheel = document.getElementById('wheel-container');
         const ppToggle = document.getElementById('pp-toggle');
@@ -421,7 +474,6 @@
             const isHidden = wheel.classList.contains('opacity-0');
             if(isHidden) {
                 wheel.classList.remove('opacity-0', 'scale-50', 'pointer-events-none');
-                // Tracking
                 if(window.trackCustomEvent) window.trackCustomEvent('OpenWheel');
             } else {
                 wheel.classList.add('opacity-0', 'scale-50', 'pointer-events-none');
