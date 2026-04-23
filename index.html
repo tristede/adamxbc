@@ -354,7 +354,7 @@
 
         <div class="w-full flex flex-col gap-3 mb-6">
             <!-- Serveur 1 : Grisé avec cadenas au survol -->
-            <button onclick="showNotice('discord')" class="relative flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/5 opacity-50 group transition-all overflow-hidden text-left">
+            <button onclick="showNotice('discord')" data-track="Alerte Lock Discord lue" class="relative flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/5 opacity-50 group transition-all overflow-hidden text-left">
                 <!-- Cadenas au survol -->
                 <i class="fa-solid fa-lock absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl text-brand opacity-0 group-hover:opacity-100 transition-all z-20 drop-shadow-[0_0_10px_rgba(149,255,102,0.8)]"></i>
                 
@@ -400,7 +400,7 @@
                             <div class="w-full h-full animate-counter-spin">
                                 <div class="magnetic-wrapper w-full h-full">
                                     <div style="transform: rotate(0deg);" class="w-full h-full">
-                                        <a href="https://open.spotify.com/user/31jf2ozzv3de76gfkigykh7lnaii?si=QtnAPaLcTTWWmcWujf8rug" target="_blank" rel="noopener noreferrer" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><i class="fa-brands fa-spotify text-[16px] text-[#1DB954]"></i></a>
+                                        <a href="https://open.spotify.com/user/31jf2ozzv3de76gfkigykh7lnaii?si=QtnAPaLcTTWWmcWujf8rug" target="_blank" rel="noopener noreferrer" data-track="Spotify" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><i class="fa-brands fa-spotify text-[16px] text-[#1DB954]"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -410,7 +410,7 @@
                             <div class="w-full h-full animate-counter-spin">
                                 <div class="magnetic-wrapper w-full h-full">
                                     <div style="transform: rotate(-120deg);" class="w-full h-full">
-                                        <a href="https://letterboxd.com/adamxbc/" target="_blank" rel="noopener noreferrer" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><svg viewBox="0 0 24 24" width="16" height="16"><circle cx="5" cy="12" r="3.5" fill="#00E054"/><circle cx="12" cy="12" r="3.5" fill="#FF8000"/><circle cx="19" cy="12" r="3.5" fill="#40BCF4"/></svg></a>
+                                        <a href="https://letterboxd.com/adamxbc/" target="_blank" rel="noopener noreferrer" data-track="Letterboxd" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><svg viewBox="0 0 24 24" width="16" height="16"><circle cx="5" cy="12" r="3.5" fill="#00E054"/><circle cx="12" cy="12" r="3.5" fill="#FF8000"/><circle cx="19" cy="12" r="3.5" fill="#40BCF4"/></svg></a>
                                     </div>
                                 </div>
                             </div>
@@ -420,7 +420,7 @@
                             <div class="w-full h-full animate-counter-spin">
                                 <div class="magnetic-wrapper w-full h-full">
                                     <div style="transform: rotate(-240deg);" class="w-full h-full flex items-center justify-center">
-                                        <a href="https://myanimelist.net/profile/adamxbc" target="_blank" rel="noopener noreferrer" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]">
+                                        <a href="https://myanimelist.net/profile/adamxbc" target="_blank" rel="noopener noreferrer" data-track="MAL" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]">
                                             <span class="font-black text-[9px] text-[#4274EA] leading-none">MAL</span>
                                         </a>
                                     </div>
@@ -436,20 +436,20 @@
         </header>
 
         <main class="flex flex-col gap-5 w-full">
-            <a href="https://instagram.com/adamxbc" target="_blank" rel="noopener noreferrer" class="btn-active anim-float shine-1 flex items-center justify-between fade-in-up group" style="animation-delay: 0.2s;">
+            <a href="https://instagram.com/adamxbc" target="_blank" rel="noopener noreferrer" data-track="Instagram" class="btn-active anim-float shine-1 flex items-center justify-between fade-in-up group" style="animation-delay: 0.2s;">
                 <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 13s;"><i class="fa-brands fa-instagram"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">INSTAGRAM</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </a>
 
-            <a href="https://twitch.tv/adamxbc" target="_blank" rel="noopener noreferrer" class="btn-active anim-float shine-2 flex items-center justify-between fade-in-up group" style="animation-delay: 0.3s;">
+            <a href="https://twitch.tv/adamxbc" target="_blank" rel="noopener noreferrer" data-track="Twitch" class="btn-active anim-float shine-2 flex items-center justify-between fade-in-up group" style="animation-delay: 0.3s;">
                 <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 15s;"><i class="fa-brands fa-twitch"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TWITCH</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </a>
 
-            <a href="https://www.tiktok.com/@adamxbc" target="_blank" rel="noopener noreferrer" class="btn-active anim-float shine-3 flex items-center justify-between fade-in-up group" style="animation-delay: 0.4s;">
+            <a href="https://www.tiktok.com/@adamxbc" target="_blank" rel="noopener noreferrer" data-track="TikTok" class="btn-active anim-float shine-3 flex items-center justify-between fade-in-up group" style="animation-delay: 0.4s;">
                 <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 12s;"><i class="fa-brands fa-tiktok"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TIKTOK</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </a>
 
             <!-- BOUTON DISCORD -->
-            <div onclick="openDiscord()" class="btn-inverted anim-float shine-inverted flex items-center fade-in-up group mt-2" style="animation-delay: 0.45s;">
+            <div onclick="openDiscord()" data-track="Menu Discord" class="btn-inverted anim-float shine-inverted flex items-center fade-in-up group mt-2" style="animation-delay: 0.45s;">
                 <div class="flex items-center gap-6 text-left w-full">
                     <div class="icon-blob-inverted blob-morph flex items-center justify-center shrink-0" style="animation-duration: 14s;"><i class="fa-brands fa-discord"></i></div>
                     <span class="font-black text-[17px] uppercase tracking-wider leading-none">DISCORD</span>
@@ -460,7 +460,7 @@
             <div class="divider fade-in-up" style="animation-delay: 0.5s;"></div>
 
             <!-- BOUTON YOUTUBE -->
-            <div onclick="showNotice('ytb')" class="btn-disabled flex items-center justify-between fade-in-up group" style="animation-delay: 0.6s;">
+            <div onclick="showNotice('ytb')" data-track="YouTube (Bientôt)" class="btn-disabled flex items-center justify-between fade-in-up group" style="animation-delay: 0.6s;">
                 <canvas id="ytb-matrix" class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none"></canvas>
                 <i class="fa-solid fa-lock absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl text-brand opacity-0 group-hover:opacity-100 transition-all z-20"></i>
                 <div class="flex items-center gap-6 relative transition-all group-hover:opacity-10 group-hover:blur-[2px] w-full text-left">
@@ -474,6 +474,69 @@
         </main>
     </div>
 
+    <!-- --- LOGIQUE FIREBASE & TRACKING --- -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // CONFIGURATION RÉELLE DE ADAMXBC
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmUaHrExjtqp7La6AJjJf8Dj4bd6etI14",
+            authDomain: "adamxbc-link.firebaseapp.com",
+            projectId: "adamxbc-link",
+            storageBucket: "adamxbc-link.firebasestorage.app",
+            messagingSenderId: "97287102827",
+            appId: "1:97287102827:web:c74f49538278166cbf6c2e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const analyticsPath = 'artifacts/adamxbc-linktree/public/data/analytics';
+
+        let userLocation = { city: 'Unknown', country: 'Unknown' };
+
+        const trackData = async (type, details = {}) => {
+            if (!auth.currentUser) return;
+            try {
+                await addDoc(collection(db, analyticsPath), {
+                    type,
+                    ...details,
+                    ...userLocation,
+                    timestamp: serverTimestamp(),
+                    device: window.innerWidth < 768 ? 'Mobile' : 'Desktop',
+                    userAgent: navigator.userAgent
+                });
+            } catch (e) { console.error("Tracking Error:", e); }
+        };
+
+        const initAnalytics = async () => {
+            try {
+                const geo = await fetch('https://ipapi.co/json/').then(res => res.json());
+                userLocation = { city: geo.city, country: geo.country_name, region: geo.region };
+            } catch (e) {}
+
+            signInAnonymously(auth).then(() => {
+                trackData('Impression');
+            });
+        };
+
+        initAnalytics();
+
+        // Écoute des clics sur les boutons
+        document.addEventListener('pointerdown', (e) => {
+            const trackable = e.target.closest('[data-track]');
+            if (trackable) {
+                trackData('Clic', { element: trackable.getAttribute('data-track') });
+            }
+        });
+
+        // Permet d'appeler le tracker pour des événements invisibles depuis d'autres scripts
+        window.trackCustomEvent = (name) => trackData('Event', { name });
+    </script>
+
+    <!-- --- LOGIQUE D'INTERFACE (AUDIO, POPUPS, ROUE, MATRIX) --- -->
     <script>
         // --- PRÉCHARGEMENT AUDIO ---
         const acceptAudio = new Audio('accept_cookies.mp3');
@@ -490,7 +553,7 @@
         }
 
         // Ajout global des clics sur les éléments interactifs
-        document.addEventListener('click', (e) => {
+        document.addEventListener('pointerdown', (e) => {
             const target = e.target.closest('a, button, .btn-inverted, .btn-disabled, #pp-toggle');
             if (target) {
                 playClick();
@@ -520,6 +583,9 @@
                 noticePopup.classList.remove('opacity-0', 'scale-95');
                 noticeOverlay.classList.remove('opacity-0');
             }, 10);
+            
+            // Tracking
+            if(window.trackCustomEvent) window.trackCustomEvent('OpenNotice_'+type);
         }
 
         function closeNotice() {
@@ -591,15 +657,18 @@
         document.addEventListener('touchend', dragEnd);
 
         window.addEventListener('load', () => {
-            if (!localStorage.getItem('cookies_v11')) {
+            if (!localStorage.getItem('cookies_v12')) {
                 setTimeout(() => { cookiePopup.style.display = 'block'; }, 1500);
             }
         });
 
         function handleAccept() { 
             acceptAudio.play().catch(e => console.log("Audio bloqué ou non trouvé"));
-            localStorage.setItem('cookies_v11', 'true'); 
+            localStorage.setItem('cookies_v12', 'true'); 
             cookiePopup.style.display = 'none'; 
+            
+            // Tracking
+            if(window.trackCustomEvent) window.trackCustomEvent('AcceptCookies');
         }
 
         function handleRefuse() { document.getElementById('cookie-text').innerText = "Tu joues à quoi ? Clique sur Ok !"; }
@@ -612,6 +681,8 @@
             const isHidden = wheel.classList.contains('opacity-0');
             if(isHidden) {
                 wheel.classList.remove('opacity-0', 'scale-50', 'pointer-events-none');
+                // Tracking
+                if(window.trackCustomEvent) window.trackCustomEvent('OpenWheel');
             } else {
                 wheel.classList.add('opacity-0', 'scale-50', 'pointer-events-none');
             }
