@@ -250,10 +250,39 @@
             position: relative;
         }
 
+        /* --- POPUP COOKIE DÉPLAÇABLE --- */
+        #cookie-popup {
+            --drag-x: 0px;
+            --drag-y: 0px;
+            position: fixed;
+            bottom: 8%;
+            left: 50%;
+            /* Le transform intègre le centrage initial (-50%) + les variables de drag */
+            transform: translate(calc(-50% + var(--drag-x)), var(--drag-y));
+            width: 90%;
+            max-width: 420px;
+            background-color: #000;
+            border: 2px solid #95ff66;
+            padding: 24px;
+            border-radius: 20px;
+            z-index: 999;
+            box-shadow: 0 0 40px rgba(0,0,0,0.9);
+            display: none;
+            touch-action: none; /* Empêche le scroll pendant le drag sur mobile */
+        }
+
+        #cookie-header {
+            cursor: grab;
+            user-select: none;
+        }
+        
+        #cookie-header:active {
+            cursor: grabbing;
+        }
+
         /* --- HOVER EFFET PP (RENFONCEMENT SANS GLOW) --- */
         #pp-toggle:hover {
             transform: scale(0.96) !important;
-            /* On garde l'ombre interne pour l'effet de pression, mais on retire la lueur verte externe */
             box-shadow: inset 0 0 20px rgba(0,0,0,0.4) !important;
         }
         #pp-toggle:active {
@@ -264,7 +293,7 @@
         #pp-toggle img {
             transition: transform 0.5s ease-out;
             animation: imageFloat 14s ease-in-out infinite;
-            transform: scale(1.1); /* Zoom léger pour masquer les bords pendant le mouvement */
+            transform: scale(1.1); 
         }
 
         @keyframes imageFloat {
@@ -291,8 +320,8 @@
     <div class="ambient-glow" style="bottom: -5%; right: -5%;"></div>
 
     <!-- POPUP COOKIE -->
-    <div id="cookie-popup" class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-[420px] bg-[#000] border-2 border-[#95ff66] p-6 rounded-[20px] z-[999] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden transition-all duration-300">
-        <div id="cookie-header" class="flex items-center gap-3 mb-3 pb-2 border-b border-white/5 cursor-grab">
+    <div id="cookie-popup" class="fade-in-up">
+        <div id="cookie-header" class="flex items-center gap-3 mb-3 pb-2 border-b border-white/5">
             <div id="cookie-icon" class="text-[#95ff66]"><i class="fa-solid fa-cookie-bite text-3xl"></i></div>
             <h2 id="cookie-title" class="font-display font-black text-white text-base uppercase tracking-tighter">Alerte Cookies</h2>
             <i class="fa-solid fa-grip-lines ml-auto text-white/20"></i>
@@ -357,9 +386,9 @@
     <div class="mobile-wrapper z-10">
         <header class="flex flex-col items-center mb-14 fade-in-up" style="animation-delay: 0.1s;">
             <div class="relative mb-7 flex items-center justify-center z-[110]">
-                <!-- PHOTO DE PROFIL AGRANDIE (135px) - Glow retiré (suppression shadow-[...]) -->
-                <div id="pp-toggle" class="w-[135px] h-[135px] blob-morph bg-[#95ff66] flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300 relative z-[110]" style="animation-duration: 10s;">
-                    <img src="pp.jpg" alt="PP" class="w-full h-full object-cover select-none pointer-events-none bg-brand/20">
+                <!-- PHOTO DE PROFIL AGRANDIE (135px) + Contour 2px Vert -->
+                <div id="pp-toggle" class="w-[135px] h-[135px] blob-morph bg-[#050505] border-2 border-brand flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300 relative z-[110]" style="animation-duration: 10s;">
+                    <img src="pp.jpg" alt="PP" class="w-full h-full object-cover select-none pointer-events-none">
                 </div>
                 <div id="live-badge" class="hidden absolute -bottom-1 -right-2 bg-[#95ff66] text-black font-black text-[9px] px-1.7 py-0.6 rounded z-[110]">LIVE</div>
 
@@ -516,18 +545,61 @@
             setTimeout(() => { dPopup.classList.add('hidden'); dOverlay.classList.add('hidden'); }, 300);
         }
 
-        // --- COOKIES ---
+        // --- COOKIES ET DRAG & DROP ---
         const cookiePopup = document.getElementById('cookie-popup');
+        const cookieHeader = document.getElementById('cookie-header');
+        
+        let isDragging = false;
+        let currentX = 0;
+        let currentY = 0;
+        let initialX;
+        let initialY;
+
+        function dragStart(e) {
+            if (e.target.closest('button')) return;
+            const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+            
+            initialX = clientX - currentX;
+            initialY = clientY - currentY;
+            isDragging = true;
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            if (e.cancelable) e.preventDefault();
+            
+            const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+
+            currentX = clientX - initialX;
+            currentY = clientY - initialY;
+
+            cookiePopup.style.setProperty('--drag-x', currentX + 'px');
+            cookiePopup.style.setProperty('--drag-y', currentY + 'px');
+        }
+
+        function dragEnd() {
+            isDragging = false;
+        }
+
+        cookieHeader.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+        cookieHeader.addEventListener('touchstart', dragStart, { passive: false });
+        document.addEventListener('touchmove', drag, { passive: false });
+        document.addEventListener('touchend', dragEnd);
+
         window.addEventListener('load', () => {
-            if (!localStorage.getItem('cookies_v10')) {
-                setTimeout(() => { cookiePopup.classList.remove('hidden'); }, 1500);
+            if (!localStorage.getItem('cookies_v11')) {
+                setTimeout(() => { cookiePopup.style.display = 'block'; }, 1500);
             }
         });
 
         function handleAccept() { 
             acceptAudio.play().catch(e => console.log("Audio bloqué ou non trouvé"));
-            localStorage.setItem('cookies_v10', 'true'); 
-            cookiePopup.classList.add('hidden'); 
+            localStorage.setItem('cookies_v11', 'true'); 
+            cookiePopup.style.display = 'none'; 
         }
 
         function handleRefuse() { document.getElementById('cookie-text').innerText = "Tu joues à quoi ? Clique sur Ok !"; }
