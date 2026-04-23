@@ -259,6 +259,20 @@
             transform: scale(0.92) !important;
         }
 
+        /* --- ANIMATION DE L'IMAGE DANS LE BLOB --- */
+        #pp-toggle img {
+            transition: transform 0.5s ease-out;
+            animation: imageFloat 14s ease-in-out infinite;
+            transform: scale(1.1); /* Zoom léger pour masquer les bords pendant le mouvement */
+        }
+
+        @keyframes imageFloat {
+            0%, 100% { transform: scale(1.1) translate(0, 0); }
+            25% { transform: scale(1.15) translate(5px, -5px); }
+            50% { transform: scale(1.1) translate(-3px, 5px); }
+            75% { transform: scale(1.12) translate(-5px, -3px); }
+        }
+
         /* --- BARRE DE SÉPARATION AMÉLIORÉE (VISIBLE) --- */
         .divider {
             width: 100%;
@@ -434,7 +448,7 @@
         // --- PRÉCHARGEMENT AUDIO ---
         const acceptAudio = new Audio('accept_cookies.mp3');
         acceptAudio.preload = 'auto';
-        acceptAudio.load(); // Démarre le chargement immédiatement
+        acceptAudio.load(); 
 
         // --- POPUPS GENERIC ---
         const noticePopup = document.getElementById('notice-popup');
