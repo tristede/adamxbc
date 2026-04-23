@@ -250,10 +250,11 @@
             position: relative;
         }
 
-        /* --- HOVER EFFET PP (RENFONCEMENT) --- */
+        /* --- HOVER EFFET PP (RENFONCEMENT SANS GLOW) --- */
         #pp-toggle:hover {
             transform: scale(0.96) !important;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.4), 0 0 35px rgba(149,255,102,0.5) !important;
+            /* On garde l'ombre interne pour l'effet de pression, mais on retire la lueur verte externe */
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.4) !important;
         }
         #pp-toggle:active {
             transform: scale(0.92) !important;
@@ -356,8 +357,8 @@
     <div class="mobile-wrapper z-10">
         <header class="flex flex-col items-center mb-14 fade-in-up" style="animation-delay: 0.1s;">
             <div class="relative mb-7 flex items-center justify-center z-[110]">
-                <!-- PHOTO DE PROFIL AGRANDIE (135px) -->
-                <div id="pp-toggle" class="w-[135px] h-[135px] blob-morph bg-[#95ff66] flex items-center justify-center shadow-[0_0_22px_rgba(149,255,102,0.25)] overflow-hidden cursor-pointer transition-all duration-300 relative z-[110]" style="animation-duration: 10s;">
+                <!-- PHOTO DE PROFIL AGRANDIE (135px) - Glow retiré (suppression shadow-[...]) -->
+                <div id="pp-toggle" class="w-[135px] h-[135px] blob-morph bg-[#95ff66] flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300 relative z-[110]" style="animation-duration: 10s;">
                     <img src="pp.jpg" alt="PP" class="w-full h-full object-cover select-none pointer-events-none bg-brand/20">
                 </div>
                 <div id="live-badge" class="hidden absolute -bottom-1 -right-2 bg-[#95ff66] text-black font-black text-[9px] px-1.7 py-0.6 rounded z-[110]">LIVE</div>
