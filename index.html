@@ -448,7 +448,24 @@
         // --- PRÉCHARGEMENT AUDIO ---
         const acceptAudio = new Audio('accept_cookies.mp3');
         acceptAudio.preload = 'auto';
-        acceptAudio.load(); 
+        
+        const clickAudio = new Audio('click.mp3');
+        clickAudio.preload = 'auto';
+
+        // Fonction pour jouer le clic sans latence
+        function playClick() {
+            clickAudio.pause();
+            clickAudio.currentTime = 0;
+            clickAudio.play().catch(e => {});
+        }
+
+        // Ajout global des clics sur les éléments interactifs
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('a, button, .btn-inverted, .btn-disabled, #pp-toggle');
+            if (target) {
+                playClick();
+            }
+        });
 
         // --- POPUPS GENERIC ---
         const noticePopup = document.getElementById('notice-popup');
@@ -501,14 +518,14 @@
         // --- COOKIES ---
         const cookiePopup = document.getElementById('cookie-popup');
         window.addEventListener('load', () => {
-            if (!localStorage.getItem('cookies_v9')) {
+            if (!localStorage.getItem('cookies_v10')) {
                 setTimeout(() => { cookiePopup.classList.remove('hidden'); }, 1500);
             }
         });
 
         function handleAccept() { 
             acceptAudio.play().catch(e => console.log("Audio bloqué ou non trouvé"));
-            localStorage.setItem('cookies_v9', 'true'); 
+            localStorage.setItem('cookies_v10', 'true'); 
             cookiePopup.classList.add('hidden'); 
         }
 
