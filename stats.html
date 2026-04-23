@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADAMXBC | Stats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brand: '#95ff66', dark: '#030005', card: '#0a0a0a' },
+                    fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #030005; color: white; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(149, 255, 102, 0.1); }
+        .tab-active { background-color: #95ff66; color: black; }
+        .stat-card { transition: transform 0.3s ease; }
+        .stat-card:hover { transform: translateY(-5px); border-color: rgba(149, 255, 102, 0.4); }
+        /* Style "Temps d'écran" : coins arrondis sur les barres */
+        canvas { max-height: 350px; }
+        
+        /* Custom Scrollbar pour la liste des boutons */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(149, 255, 102, 0.3); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(149, 255, 102, 0.6); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+            <div>
+                <h1 class="text-4xl font-display font-black tracking-tighter text-brand uppercase text-center md:text-left">ANALYTICS</h1>
+                <p class="text-white/40 text-xs font-bold uppercase tracking-widest text-center md:text-left">Données du Linktree</p>
+            </div>
+            
+            <!-- Filtres -->
+            <div class="flex bg-card p-1 rounded-xl border border-white/5">
+                <button onclick="changePeriod('day')" id="btn-day" class="px-6 py-2 rounded-lg text-xs font-black uppercase transition-all">Jour</button>
+                <button onclick="changePeriod('week')" id="btn-week" class="px-6 py-2 rounded-lg text-xs font-black uppercase transition-all">Semaine</button>
+                <button onclick="changePeriod('all')" id="btn-all" class="px-6 py-2 rounded-lg text-xs font-black uppercase transition-all tab-active">Tout</button>
+            </div>
+        </header>
+
+        <!-- État de chargement -->
+        <div id="loading" class="flex flex-col items-center justify-center py-20">
+            <div class="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p class="text-brand font-black text-xs uppercase animate-pulse">Récupération des données...</p>
+        </div>
+
+        <!-- Contenu principal -->
+        <div id="dashboard-content" class="hidden">
+            <!-- Grille de stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="glass p-6 rounded-2xl stat-card border border-white/5">
+                    <p class="text-white/40 text-[10px] font-black uppercase mb-1">Impressions</p>
+                    <h2 id="stat-impressions" class="text-4xl font-display font-black text-white">0</h2>
+                    <div class="w-full bg-white/5 h-1 mt-4 rounded-full overflow-hidden">
+                        <div class="bg-brand h-full" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="glass p-6 rounded-2xl stat-card border border-white/5">
+                    <p class="text-white/40 text-[10px] font-black uppercase mb-1">Total Interactions</p>
+                    <h2 id="stat-clicks" class="text-4xl font-display font-black text-brand">0</h2>
+                    <div class="w-full bg-white/5 h-1 mt-4 rounded-full overflow-hidden">
+                        <div id="bar-clicks" class="bg-brand h-full" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="glass p-6 rounded-2xl stat-card border border-white/5">
+                    <p class="text-white/40 text-[10px] font-black uppercase mb-1">Taux d'engagement</p>
+                    <h2 id="stat-ctr" class="text-4xl font-display font-black text-white">0%</h2>
+                    <p class="text-[9px] text-white/20 mt-3 font-bold uppercase">Interactions / Impressions</p>
+                </div>
+            </div>
+
+            <!-- Graphique principal -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 glass p-6 rounded-3xl border border-white/5 flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-black uppercase text-xs tracking-widest text-white/60">Activité temporelle</h3>
+                        <i class="fa-solid fa-chart-simple text-brand"></i>
+                    </div>
+                    <div class="flex-1 relative min-h-[300px]">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Répartition des clics et événements -->
+                <div class="glass p-6 rounded-3xl border border-white/5 flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-black uppercase text-xs tracking-widest text-white/60">Top Boutons & Actions</h3>
+                        <i class="fa-solid fa-fire text-brand"></i>
+                    </div>
+                    <div id="clicks-list" class="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2 flex-1">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Géo & Appareils -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div class="glass p-6 rounded-3xl border border-white/5">
+                    <h3 class="font-black uppercase text-xs tracking-widest text-white/60 mb-6">Top Villes</h3>
+                    <div id="cities-list" class="space-y-3">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+                <div class="glass p-6 rounded-3xl border border-white/5">
+                    <h3 class="font-black uppercase text-xs tracking-widest text-white/60 mb-6">Supports</h3>
+                    <canvas id="deviceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // CONFIGURATION RÉELLE DE ADAMXBC
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmUaHrExjtqp7La6AJjJf8Dj4bd6etI14",
+            authDomain: "adamxbc-link.firebaseapp.com",
+            projectId: "adamxbc-link",
+            storageBucket: "adamxbc-link.firebasestorage.app",
+            messagingSenderId: "97287102827",
+            appId: "1:97287102827:web:c74f49538278166cbf6c2e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const analyticsPath = 'artifacts/adamxbc-linktree/public/data/analytics';
+
+        let rawData = [];
+        let currentPeriod = 'all';
+        let mainChart, deviceChart;
+
+        // --- AUTH & LISTEN ---
+        signInAnonymously(auth).then(() => {
+            const q = collection(db, analyticsPath);
+            onSnapshot(q, (snapshot) => {
+                rawData = snapshot.docs.map(doc => ({
+                    ...doc.data(),
+                    date: doc.data().timestamp?.toDate() || new Date()
+                }));
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('dashboard-content').classList.remove('hidden');
+                updateDashboard();
+            });
+        }).catch((error) => {
+            console.error("Auth Error:", error);
+            const loadingDiv = document.getElementById('loading');
+            if (error.code === 'auth/configuration-not-found') {
+                loadingDiv.innerHTML = `
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-4xl mb-4"></i>
+                    <p class="text-red-500 font-black text-sm uppercase mb-2">Authentification requise</p>
+                    <p class="text-white/60 text-xs text-center max-w-xs leading-relaxed">
+                        L'authentification <b>Anonyme</b> n'est pas activée.<br><br>
+                        Va dans Firebase > Authentication > Sign-in method et active le fournisseur "Anonyme".
+                    </p>
+                `;
+            } else {
+                loadingDiv.innerHTML = `<p class="text-red-500 font-black uppercase text-xs">Erreur de connexion Firebase</p>`;
+            }
+        });
+
+        // --- NAVIGATION ---
+        window.changePeriod = (p) => {
+            currentPeriod = p;
+            document.querySelectorAll('header button').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById('btn-' + p).classList.add('tab-active');
+            updateDashboard();
+        };
+
+        function updateDashboard() {
+            const now = new Date();
+            let filtered = rawData;
+
+            if (currentPeriod === 'day') {
+                filtered = rawData.filter(d => (now - d.date) < 24 * 60 * 60 * 1000);
+            } else if (currentPeriod === 'week') {
+                filtered = rawData.filter(d => (now - d.date) < 7 * 24 * 60 * 60 * 1000);
+            }
+
+            // --- CALCULS ---
+            const impressions = filtered.filter(d => d.type === 'Impression').length;
+            const clicksAndEvents = filtered.filter(d => d.type === 'Clic' || d.type === 'Event').length;
+            const ctr = impressions > 0 ? Math.round((clicksAndEvents / impressions) * 100) : 0;
+
+            document.getElementById('stat-impressions').innerText = impressions;
+            document.getElementById('stat-clicks').innerText = clicksAndEvents;
+            document.getElementById('stat-ctr').innerText = ctr + "%";
+            document.getElementById('bar-clicks').style.width = Math.min(100, ctr * 2) + "%";
+
+            updateMainChart(filtered);
+            updateClicksList(filtered);
+            updateCitiesList(filtered);
+            updateDeviceChart(filtered);
+        }
+
+        function updateMainChart(data) {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            if(mainChart) mainChart.destroy();
+
+            let groups = {};
+            if(currentPeriod === 'day') {
+                data.forEach(d => {
+                    const h = d.date.getHours() + "h";
+                    groups[h] = (groups[h] || 0) + 1;
+                });
+            } else {
+                data.forEach(d => {
+                    const dateStr = d.date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
+                    groups[dateStr] = (groups[dateStr] || 0) + 1;
+                });
+            }
+
+            mainChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(groups),
+                    datasets: [{
+                        label: 'Visites / Actions',
+                        data: Object.values(groups),
+                        backgroundColor: '#95ff66',
+                        borderRadius: 10,
+                        barThickness: currentPeriod === 'all' ? 12 : 25
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, border: { display: false }, ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } } },
+                        x: { grid: { display: false }, border: { display: false }, ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 10, weight: 'bold' } } }
+                    }
+                }
+            });
+        }
+
+        function updateClicksList(data) {
+            const list = document.getElementById('clicks-list');
+            const counts = {};
+            
+            // Dictionnaire pour traduire les événements système en noms propres
+            const eventLabels = {
+                'OpenWheel': 'Roue PP ouverte',
+                'AcceptCookies': 'Cookies acceptés',
+                'OpenNotice_ytb': 'Alerte YTB lue',
+                'OpenNotice_discord': 'Alerte Lock Discord lue'
+            };
+
+            data.forEach(d => {
+                if (d.type === 'Clic' && d.element) {
+                    counts[d.element] = (counts[d.element] || 0) + 1;
+                } else if (d.type === 'Event' && d.name) {
+                    // Traduire si possible, sinon garder le nom d'origine
+                    const label = eventLabels[d.name] || d.name;
+                    counts[label] = (counts[label] || 0) + 1;
+                }
+            });
+
+            const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+            list.innerHTML = sorted.map(([name, count]) => `
+                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 rounded-full bg-brand"></div>
+                        <span class="text-[11px] font-bold uppercase text-white/80">${name}</span>
+                    </div>
+                    <span class="text-xs font-black text-brand">${count}</span>
+                </div>
+            `).join('') || '<p class="text-white/20 text-[10px] font-bold uppercase py-2">Aucune interaction</p>';
+        }
+
+        function updateCitiesList(data) {
+            const list = document.getElementById('cities-list');
+            const counts = {};
+            data.forEach(d => {
+                if(d.city && d.city !== 'Unknown') {
+                    const key = `${d.city}, ${d.country}`;
+                    counts[key] = (counts[key] || 0) + 1;
+                }
+            });
+
+            const sorted = Object.entries(counts).slice(0, 6).sort((a,b) => b[1] - a[1]);
+            list.innerHTML = sorted.map(([name, count]) => `
+                <div class="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <span class="text-[11px] font-bold uppercase tracking-tight">${name}</span>
+                    <span class="text-brand font-black text-[11px]">${count}</span>
+                </div>
+            `).join('') || '<p class="text-white/20 text-[10px] font-bold uppercase">Localisation en cours...</p>';
+        }
+
+        function updateDeviceChart(data) {
+            const ctx = document.getElementById('deviceChart').getContext('2d');
+            if(deviceChart) deviceChart.destroy();
+
+            const mobile = data.filter(d => d.device === 'Mobile').length;
+            const desktop = data.filter(d => d.device === 'Desktop').length;
+
+            deviceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mobile', 'Desktop'],
+                    datasets: [{
+                        data: [mobile, desktop],
+                        backgroundColor: ['#95ff66', '#151515'],
+                        borderColor: '#030005',
+                        borderWidth: 6,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '75%',
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                color: 'rgba(255,255,255,0.6)', 
+                                padding: 20,
+                                font: { size: 10, weight: 'bold' },
+                                usePointStyle: true
+                            } 
+                        } 
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
