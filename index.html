@@ -128,27 +128,21 @@
             <i class="fa-brands fa-discord text-[#95ff66] text-xl"></i>
         </div>
         <h3 class="font-display font-black text-white text-lg uppercase tracking-tight mb-2">Serveurs Discord</h3>
-        <p class="text-white/60 text-xs font-bold leading-relaxed mb-6 text-center">Les accès sont actuellement limités.</p>
+        <p class="text-white/60 text-xs font-bold leading-relaxed mb-6 text-center">Rejoins la communauté !</p>
         <div class="w-full flex flex-col gap-3 mb-6">
-            <button onclick="showNotice('discord')" data-track="Alerte Lock Discord lue" class="relative flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/5 opacity-50 group transition-all overflow-hidden text-left">
-                <i class="fa-solid fa-lock absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl text-brand opacity-0 group-hover:opacity-100 transition-all z-20 drop-shadow-[0_0_10px_rgba(149,255,102,0.8)]"></i>
-                <div class="flex items-center gap-3 relative transition-all group-hover:opacity-10 group-hover:blur-[2px] w-full">
-                    <div class="w-10 h-10 rounded-lg bg-[#151515] text-[#555] flex items-center justify-center text-lg"><i class="fa-brands fa-discord"></i></div>
+            <!-- NGC STARS -->
+            <a href="https://discord.gg/E5vhTmp6Kk" target="_blank" data-track="Discord NGC STARS" class="relative flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-left group">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="w-10 h-10 rounded-lg bg-[#95ff66]/10 text-[#95ff66] flex items-center justify-center text-lg group-hover:bg-[#95ff66] group-hover:text-black transition-colors shadow-[0_0_10px_rgba(149,255,102,0.1)]">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5"><path fill="currentColor" d="M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z"/></svg>
+                    </div>
                     <div class="flex flex-col">
-                        <span class="font-black text-sm text-[#888] uppercase">Mon Discord</span>
-                        <span class="text-[9px] text-[#666] uppercase tracking-wider">Officiel - En projet</span>
+                        <span class="font-black text-sm text-white uppercase">NGC STARS</span>
+                        <span class="text-[9px] text-[#95ff66] uppercase tracking-wider">Mon serveur discord</span>
                     </div>
                 </div>
-            </button>
-            <div class="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/5 opacity-30 cursor-not-allowed">
-                <div class="flex items-center gap-3 w-full text-left">
-                    <div class="w-10 h-10 rounded-lg bg-[#0a0a0a] text-[#333] flex items-center justify-center text-lg"><i class="fa-solid fa-lock"></i></div>
-                    <div class="flex flex-col">
-                        <span class="font-black text-sm text-[#444] uppercase">Futur Serveur</span>
-                        <span class="text-[9px] text-[#333] uppercase tracking-wider">Bientôt</span>
-                    </div>
-                </div>
-            </div>
+                <i class="fa-solid fa-arrow-right text-[13px] text-white/30 group-hover:text-[#95ff66] transition-colors"></i>
+            </a>
         </div>
         <button onclick="closeDiscord()" class="w-full bg-[#151515] text-white hover:text-[#95ff66] font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 transition-all duration-300">Fermer</button>
     </div>
@@ -217,9 +211,13 @@
         </main>
         
         <!-- Mentions légales obligatoires (RGPD) -->
-        <footer class="mt-14 text-center fade-in-up opacity-30 hover:opacity-100 transition-opacity" style="animation-delay: 0.7s;">
+        <footer class="mt-14 flex justify-center items-center gap-3 text-center fade-in-up opacity-30 hover:opacity-100 transition-opacity" style="animation-delay: 0.7s;">
             <a href="#" onclick="alert('Politique de confidentialité : Ce site utilise Firebase (Google) pour analyser de manière anonyme la provenance des visites (ville), les clics et le type d\'appareil (mobile/pc), UNIQUEMENT si vous avez cliqué sur OK. Aucune donnée personnelle nominative n\'est collectée ni revendue.\n\nÉditeur : Adamxbc'); return false;" class="text-[9px] text-white font-bold uppercase tracking-widest cursor-pointer hover:text-brand transition-colors">
                 Mentions Légales & Confidentialité
+            </a>
+            <span class="text-white/30 text-[9px]">•</span>
+            <a href="stats.html" class="text-[9px] text-white font-bold uppercase tracking-widest cursor-pointer hover:text-brand transition-colors">
+                Stats
             </a>
         </footer>
     </div>
