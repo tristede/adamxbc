@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADAMXBC | Widget Caméra</title>
+    
+    <!-- Polices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brand: '#95ff66' },
+                    fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* BASE (Transparent pour OBS) */
+        body {
+            margin: 0;
+            padding: 0;
+            /* Format d'écran standard 1080p */
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            color: #ffffff;
+            background-color: transparent; 
+        }
+
+        /* --- FOND DE PRÉVISUALISATION (Caché par défaut, utile pour tester) --- */
+        .preview-bg {
+            position: absolute;
+            inset: 0;
+            background-color: #030005;
+            background-image: radial-gradient(circle, rgba(149,255,102,0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -2;
+            display: none;
+        }
+
+        /* --- EFFETS DE LUMIÈRE & MATIÈRE --- */
+        .cam-glow {
+            position: absolute;
+            inset: -80px;
+            background: radial-gradient(circle, rgba(149,255,102,0.15) 0%, transparent 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass {
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(149, 255, 102, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 12px rgba(149, 255, 102, 0.7);
+        }
+
+        /* --- ANIMATION ORGANIQUE (BLOB) --- */
+        .blob-morph {
+            border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%;
+            animation: morph 8s ease-in-out infinite;
+        }
+
+        @keyframes morph {
+            0%   { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; }
+            33%  { border-radius: 65% 35% 55% 45% / 55% 65% 35% 45%; }
+            66%  { border-radius: 40% 60% 30% 70% / 60% 40% 70% 30%; }
+            100% { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center">
+
+    <!-- ========================================== -->
+    <!-- WIDGET CAMÉRA (Gros et Centré)             -->
+    <!-- ========================================== -->
+    
+    <!-- Le cadre Webcam (Taille standard 720p HD : 1280x720) -->
+    <div class="relative w-[1280px] h-[720px]">
+        
+        <!-- Lumière ambiante derrière la cam -->
+        <div class="cam-glow"></div>
+        
+        <!-- L'ASTUCE DU POCHOIR (SVG) -->
+        <svg width="1280" height="720" class="absolute inset-0 z-10 pointer-events-none">
+            <defs>
+                <mask id="cam-hole">
+                    <rect width="100%" height="100%" fill="white" />
+                    <!-- Trou central avec des angles ronds de 32px -->
+                    <rect x="6" y="6" width="1268" height="708" rx="32" fill="black" />
+                </mask>
+                <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="6" result="blur" />
+                    <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+            </defs>
+            
+            <!-- Le Cache -->
+            <rect width="100%" height="100%" fill="#050505" mask="url(#cam-hole)" />
+            
+            <!-- La lueur Néon Verte -->
+            <rect x="6" y="6" width="1268" height="708" rx="32" fill="none" stroke="#95ff66" stroke-width="8" filter="url(#neon-glow)" />
+            
+            <!-- Le coeur du Néon (Blanc) -->
+            <rect x="6" y="6" width="1268" height="708" rx="32" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.9" />
+        </svg>
+
+        <!-- Badge LIVE (Blob organique) proportionné à la taille -->
+        <div class="absolute -top-6 -right-6 w-24 h-24 bg-brand blob-morph flex items-center justify-center text-black shadow-[0_0_30px_rgba(149,255,102,0.5)] z-20">
+            <span class="font-display font-black text-xl tracking-tighter">LIVE</span>
+        </div>
+        
+        <!-- Pseudo encastré proportionné à la taille -->
+        <div class="absolute -bottom-6 left-12 glass px-8 py-3 rounded-2xl border border-brand/40 z-20">
+            <span class="font-display font-black uppercase text-2xl tracking-tight text-white glow-text">ADAMXBC</span>
+        </div>
+    </div>
+
+</body>
+</html>
