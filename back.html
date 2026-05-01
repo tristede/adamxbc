@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADAMXBC | Background Animé</title>
+    
+    <style>
+        /* --- BASE DU DOCUMENT --- */
+        body, html {
+            margin: 0;
+            padding: 0;
+            /* Forcé en 1080p pour coller parfaitement à la taille d'une scène OBS */
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            background-color: #030005; /* Noir profond dominant */
+        }
+
+        /* --- CONTENEUR DES LUEURS DYNAMIQUES --- */
+        .glow-container {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            z-index: 1; /* Derrière le quadrillage */
+        }
+
+        /* Propriétés communes aux lueurs */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(200px); /* Flou extrême pour se fondre dans le noir absolu */
+            background-color: #95ff66;
+        }
+
+        /* Lueur principale : Concentrée en bas à droite, très discrète */
+        .orb-1 {
+            width: 1200px;
+            height: 1200px;
+            bottom: -600px;
+            right: -400px;
+            opacity: 0.04; /* Opacité quasi invisible (était à 0.15 avant) */
+            animation: pulse-corner 25s infinite alternate ease-in-out;
+        }
+
+        /* Lueur secondaire : Ajoute une légère variation de forme dans le même coin */
+        .orb-2 {
+            width: 800px;
+            height: 800px;
+            bottom: -200px;
+            right: -600px;
+            opacity: 0.02;
+            animation: pulse-corner-2 30s infinite alternate ease-in-out;
+        }
+
+        /* --- ANIMATIONS LENTES ET RESTREINTES --- */
+        /* La lumière ne traverse plus l'écran, elle "respire" juste dans son coin */
+        @keyframes pulse-corner {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.02; }
+            100% { transform: scale(1.1) translate(-100px, -50px); opacity: 0.06; }
+        }
+
+        @keyframes pulse-corner-2 {
+            0% { transform: scale(0.8) translate(0, 0); opacity: 0.01; }
+            100% { transform: scale(1.2) translate(-50px, -150px); opacity: 0.04; }
+        }
+
+        /* --- LE QUADRILLAGE (GRID) --- */
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2; /* Par-dessus les lueurs */
+            background-image: 
+                linear-gradient(rgba(149, 255, 102, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(149, 255, 102, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px; /* Taille des carreaux */
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LUEURS EN MOUVEMENT (Discrètes, limitées au coin bas-droite) -->
+    <div class="glow-container">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <!-- QUADRILLAGE FIXE (Opacité réduite pour être plus subtil) -->
+    <div class="grid-overlay"></div>
+
+</body>
+</html>
