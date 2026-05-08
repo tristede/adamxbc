@@ -11,7 +11,7 @@
     <!-- Polices -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@900&family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <!-- Icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -23,8 +23,8 @@
             theme: {
                 extend: {
                     colors: { brand: '#95ff66' },
-                    fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'] },
-                    animation: { 'spin-slow': 'spin 60s linear infinite', 'counter-spin': 'counter-spin 60s linear infinite' },
+                    fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'], pixel: ['"Press Start 2P"', 'cursive'] },
+                    animation: { 'spin-slow': 'spin 60s linear infinite', 'counter-spin': 'counter-spin 60s linear infinite', 'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
                     keyframes: { 'counter-spin': { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(-360deg)' } } }
                 }
             }
@@ -130,7 +130,6 @@
         <h3 class="font-display font-black text-white text-lg uppercase tracking-tight mb-2">Serveurs Discord</h3>
         <p class="text-white/60 text-xs font-bold leading-relaxed mb-6 text-center">Rejoins la communauté !</p>
         <div class="w-full flex flex-col gap-3 mb-6">
-            <!-- NGC STARS -->
             <a href="https://discord.gg/E5vhTmp6Kk" target="_blank" data-track="Discord NGC STARS" class="relative flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-left group">
                 <div class="flex items-center gap-3 w-full">
                     <div class="w-10 h-10 rounded-lg bg-[#95ff66]/10 text-[#95ff66] flex items-center justify-center text-lg group-hover:bg-[#95ff66] group-hover:text-black transition-colors shadow-[0_0_10px_rgba(149,255,102,0.1)]">
@@ -149,35 +148,32 @@
     <div id="discord-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[900] hidden opacity-0 transition-all duration-300" onclick="closeDiscord()"></div>
 
     <div class="mobile-wrapper z-10">
-        <header class="flex flex-col items-center mb-14 fade-in-up" style="animation-delay: 0.1s;">
+        <header class="flex flex-col items-center mb-12 fade-in-up" style="animation-delay: 0.1s;">
             <div class="relative mb-7 flex items-center justify-center z-[110]">
-                <!-- PHOTO DE PROFIL -->
-                <div id="pp-toggle" class="w-[135px] h-[135px] blob-morph bg-[#050505] border-2 border-brand flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300 relative z-[110]" style="animation-duration: 10s;">
-                    <img src="pp.jpg" alt="PP" class="w-full h-full object-cover select-none pointer-events-none">
+                <!-- PHOTO DE PROFIL EASTER EGG MINI GAME -->
+                <div id="pp-toggle" onclick="window.location.href='mini_games.html'" class="w-[135px] h-[135px] blob-morph bg-[#050505] border-2 border-brand flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300 relative z-[110] group" style="animation-duration: 10s;">
+                    <img src="pp.jpg" alt="PP" class="w-full h-full object-cover select-none pointer-events-none group-hover:scale-110 transition-transform duration-500">
                 </div>
                 <div id="live-badge" class="hidden absolute -bottom-1 -right-2 bg-[#95ff66] text-black font-black text-[9px] px-1.7 py-0.6 rounded z-[110]">LIVE</div>
-                <div id="wheel-container" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] opacity-0 scale-50 pointer-events-none transition-all duration-500 z-[100]">
-                    <div class="w-full h-full animate-spin-slow relative">
-                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(0deg) translateY(-110px);">
-                            <div class="w-full h-full animate-counter-spin">
-                                <div class="magnetic-wrapper w-full h-full"><div style="transform: rotate(0deg);" class="w-full h-full"><a href="https://open.spotify.com/user/31jf2ozzv3de76gfkigykh7lnaii?si=QtnAPaLcTTWWmcWujf8rug" target="_blank" data-track="Spotify" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><i class="fa-brands fa-spotify text-[16px] text-[#1DB954]"></i></a></div></div>
-                            </div>
-                        </div>
-                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(120deg) translateY(-110px);">
-                            <div class="w-full h-full animate-counter-spin">
-                                <div class="magnetic-wrapper w-full h-full"><div style="transform: rotate(-120deg);" class="w-full h-full"><a href="https://letterboxd.com/adamxbc/" target="_blank" data-track="Letterboxd" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><svg viewBox="0 0 24 24" width="16" height="16"><circle cx="5" cy="12" r="3.5" fill="#00E054"/><circle cx="12" cy="12" r="3.5" fill="#FF8000"/><circle cx="19" cy="12" r="3.5" fill="#40BCF4"/></svg></a></div></div>
-                            </div>
-                        </div>
-                        <div class="absolute top-1/2 left-1/2 -mt-4 -ml-4 w-8 h-8" style="transform: rotate(240deg) translateY(-110px);">
-                            <div class="w-full h-full animate-counter-spin">
-                                <div class="magnetic-wrapper w-full h-full"><div style="transform: rotate(-240deg);" class="w-full h-full flex items-center justify-center"><a href="https://myanimelist.net/profile/adamxbc" target="_blank" data-track="MAL" class="w-full h-full bg-[#95ff66]/10 backdrop-blur-md border border-[#95ff66]/30 rounded-full flex items-center justify-center hover:bg-[#95ff66]/20 transition-all shadow-[0_4px_15px_rgba(149,255,102,0.15)]"><span class="font-black text-[9px] text-[#4274EA] leading-none">MAL</span></a></div></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
+            
             <h1 class="text-[3.4rem] md:text-[4.1rem] font-display font-black tracking-tighter uppercase leading-none glow-title py-2.5 text-center">ADAMXBC</h1>
-            <p class="text-white font-black uppercase mt-2.5 text-[11px] tracking-[0.16em] opacity-40 text-center">WSH Y'A TOUS MES LIENS ICI !</p>
+            
+            <!-- ROW 3 ICÔNES SOUS LE PSEUDO -->
+            <div class="flex items-center justify-center gap-6 mt-1 mb-0 relative z-[120]">
+                <!-- MAL -->
+                <a href="https://myanimelist.net/profile/adamxbc" target="_blank" data-track="MAL" class="w-8 h-8 rounded-full bg-[#95ff66]/10 border border-[#95ff66]/20 flex items-center justify-center hover:bg-[#95ff66]/20 hover:border-[#95ff66]/40 transition-all hover:-translate-y-1 shadow-[0_0_10px_rgba(149,255,102,0.05)]">
+                    <span class="font-black text-[8px] text-[#4274EA] leading-none">MAL</span>
+                </a>
+                <!-- SPOTIFY -->
+                <a href="https://open.spotify.com/user/31jf2ozzv3de76gfkigykh7lnaii?si=QtnAPaLcTTWWmcWujf8rug" target="_blank" data-track="Spotify" class="w-8 h-8 rounded-full bg-[#95ff66]/10 border border-[#95ff66]/20 flex items-center justify-center hover:bg-[#95ff66]/20 hover:border-[#95ff66]/40 transition-all hover:-translate-y-1 shadow-[0_0_10px_rgba(149,255,102,0.05)]">
+                    <i class="fa-brands fa-spotify text-[14px] text-[#1DB954]"></i>
+                </a>
+                <!-- LETTERBOXD -->
+                <a href="https://letterboxd.com/adamxbc/" target="_blank" data-track="Letterboxd" class="w-8 h-8 rounded-full bg-[#95ff66]/10 border border-[#95ff66]/20 flex items-center justify-center hover:bg-[#95ff66]/20 hover:border-[#95ff66]/40 transition-all hover:-translate-y-1 shadow-[0_0_10px_rgba(149,255,102,0.05)]">
+                    <svg viewBox="0 0 24 24" width="14" height="14"><circle cx="5" cy="12" r="3.5" fill="#00E054"/><circle cx="12" cy="12" r="3.5" fill="#FF8000"/><circle cx="19" cy="12" r="3.5" fill="#40BCF4"/></svg>
+                </a>
+            </div>
         </header>
 
         <main class="flex flex-col gap-5 w-full">
@@ -190,13 +186,16 @@
             <a href="https://www.tiktok.com/@adamxbc" target="_blank" data-track="TikTok" class="btn-active anim-float shine-3 flex items-center justify-between fade-in-up group" style="animation-delay: 0.4s;">
                 <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 12s;"><i class="fa-brands fa-tiktok"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TIKTOK</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </a>
+            
             <div onclick="openDiscord()" data-track="Menu Discord" class="btn-inverted anim-float shine-inverted flex items-center fade-in-up group mt-2" style="animation-delay: 0.45s;">
                 <div class="flex items-center gap-6 text-left w-full">
                     <div class="icon-blob-inverted blob-morph flex items-center justify-center shrink-0" style="animation-duration: 14s;"><i class="fa-brands fa-discord"></i></div>
                     <span class="font-black text-[17px] uppercase tracking-wider leading-none">DISCORD</span>
                 </div>
             </div>
+            
             <div class="divider fade-in-up" style="animation-delay: 0.5s;"></div>
+            
             <div onclick="showNotice('ytb')" data-track="YouTube (Bientôt)" class="btn-disabled flex items-center justify-between fade-in-up group" style="animation-delay: 0.6s;">
                 <canvas id="ytb-matrix" class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none"></canvas>
                 <i class="fa-solid fa-lock absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl text-brand opacity-0 group-hover:opacity-100 transition-all z-20"></i>
@@ -208,6 +207,7 @@
                     </div>
                 </div>
             </div>
+
         </main>
         
         <!-- Mentions légales obligatoires (RGPD) -->
@@ -273,7 +273,6 @@
         // --- NOUVELLE LOGIQUE RGPD OPT-IN ---
         const consent = localStorage.getItem('cookies_v12');
 
-        // Fonction pour activer l'écoute des clics (seulement si accepté)
         const enableTracking = () => {
             document.addEventListener('pointerdown', (e) => {
                 const trackable = e.target.closest('[data-track]');
@@ -284,86 +283,60 @@
             window.trackCustomEvent = (name) => trackData('Event', { name });
         };
 
-        // Si l'utilisateur avait DÉJÀ accepté lors d'une précédente visite
         if (consent === 'true') {
             initAnalytics();
             enableTracking();
         } else {
-            // Fonction vide pour éviter les erreurs JavaScript si on clique sur un truc avant d'accepter
             window.trackCustomEvent = () => {};
         }
 
         // --- ACTIONS DES BOUTONS DU BANDEAU ---
         window.handleAccept = function() { 
             acceptAudio.play().catch(e => console.log("Audio bloqué ou non trouvé"));
-            
-            // On sauvegarde l'accord et on cache le popup
             localStorage.setItem('cookies_v12', 'true'); 
             document.getElementById('cookie-popup').style.display = 'none'; 
-            
-            // ON LANCE FIREBASE SEULEMENT MAINTENANT !
             initAnalytics();
             enableTracking();
-            
             window.trackCustomEvent('AcceptCookies');
         }
 
         window.handleRefuse = function() { 
-            // On sauvegarde le refus : la loi est respectée, Firebase reste endormi.
             localStorage.setItem('cookies_v12', 'false'); 
-            
-            // MODE TROLL ACTIVÉ
             document.getElementById('cookie-title').style.display = 'none';
             document.getElementById('cookie-icon').style.display = 'none';
             document.getElementById('cookie-text').innerText = "Ok, pas de cookies c'est compris. Mais viens me follow sur twitch alors!!";
             
-            // On modifie directement les 2 boutons existants au lieu d'en créer de nouveaux
             const btnOk = document.getElementById('btn-cookie-ok');
             const btnNon = document.getElementById('btn-cookie-non');
             
-            // Modif du bouton 1 (Ok -> Follow)
             btnOk.innerHTML = '<i class="fa-brands fa-twitch text-sm"></i> Follow';
             btnOk.className = 'bg-brand text-black font-black uppercase text-[11px] p-3 rounded-lg flex-1 flex items-center justify-center gap-2 transition-transform hover:scale-95';
             btnOk.onclick = function() {
                 window.open('https://twitch.tv/adamxbc', '_blank');
                 closeCookiePopup();
             };
-
-            // Modif du bouton 2 (Non ferme juste la popup)
             btnNon.onclick = closeCookiePopup;
         }
 
         window.closeCookiePopup = function() {
             document.getElementById('cookie-popup').style.display = 'none';
         }
-
     </script>
 
-    <!-- --- LOGIQUE D'INTERFACE (AUDIO, POPUPS, ROUE, MATRIX) --- -->
+    <!-- --- LOGIQUE D'INTERFACE DE BASE --- -->
     <script>
-        // --- PRÉCHARGEMENT AUDIO ---
         const acceptAudio = new Audio('accept_cookies.mp3');
         acceptAudio.preload = 'auto';
-        
         const clickAudio = new Audio('click.mp3');
         clickAudio.preload = 'auto';
 
-        // Fonction pour jouer le clic sans latence
-        function playClick() {
-            clickAudio.pause();
-            clickAudio.currentTime = 0;
-            clickAudio.play().catch(e => {});
-        }
+        function playClick() { clickAudio.pause(); clickAudio.currentTime = 0; clickAudio.play().catch(e => {}); }
 
-        // Ajout global des clics sur les éléments interactifs
         document.addEventListener('pointerdown', (e) => {
             const target = e.target.closest('a, button, .btn-inverted, .btn-disabled, #pp-toggle');
-            if (target) {
-                playClick();
-            }
+            if (target && target.id !== 'submit-btn') { playClick(); }
         });
 
-        // --- POPUPS GENERIC ---
         const noticePopup = document.getElementById('notice-popup');
         const noticeOverlay = document.getElementById('notice-overlay');
         const noticeTitle = document.getElementById('notice-title');
@@ -375,31 +348,18 @@
                 noticeTitle.innerText = "YouTube en chantier !";
                 noticeText.innerText = "La chaîne est en préparation. Ça arrive bientôt chef !";
                 noticeIcon.className = "fa-solid fa-person-digging text-brand text-xl";
-            } else {
-                noticeTitle.innerText = "Discord en travaux !";
-                noticeText.innerText = "Le serveur est en cours de configuration. Un peu de patience !";
-                noticeIcon.className = "fa-brands fa-discord text-brand text-xl";
             }
             noticePopup.classList.remove('hidden');
             noticeOverlay.classList.remove('hidden');
-            setTimeout(() => {
-                noticePopup.classList.remove('opacity-0', 'scale-95');
-                noticeOverlay.classList.remove('opacity-0');
-            }, 10);
-            
-            if(window.trackCustomEvent) window.trackCustomEvent('OpenNotice_'+type);
+            setTimeout(() => { noticePopup.classList.remove('opacity-0', 'scale-95'); noticeOverlay.classList.remove('opacity-0'); }, 10);
         }
 
         function closeNotice() {
             noticePopup.classList.add('opacity-0', 'scale-95');
             noticeOverlay.classList.add('opacity-0');
-            setTimeout(() => {
-                noticePopup.classList.add('hidden');
-                noticeOverlay.classList.add('hidden');
-            }, 300);
+            setTimeout(() => { noticePopup.classList.add('hidden'); noticeOverlay.classList.add('hidden'); }, 300);
         }
 
-        // --- DISCORD POPUP ---
         const dPopup = document.getElementById('discord-popup');
         const dOverlay = document.getElementById('discord-overlay');
         function openDiscord() {
@@ -413,118 +373,48 @@
             setTimeout(() => { dPopup.classList.add('hidden'); dOverlay.classList.add('hidden'); }, 300);
         }
 
-        // --- COOKIES ET DRAG & DROP ---
         const cookiePopup = document.getElementById('cookie-popup');
         const cookieHeader = document.getElementById('cookie-header');
-        
-        let isDragging = false;
-        let currentX = 0;
-        let currentY = 0;
-        let initialX;
-        let initialY;
+        let isDragging = false, currentX = 0, currentY = 0, initialX, initialY;
 
         function dragStart(e) {
             if (e.target.closest('button') || e.target.closest('a')) return;
             const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
             const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
-            
-            initialX = clientX - currentX;
-            initialY = clientY - currentY;
-            isDragging = true;
+            initialX = clientX - currentX; initialY = clientY - currentY; isDragging = true;
         }
 
         function drag(e) {
             if (!isDragging) return;
             if (e.cancelable) e.preventDefault();
-            
             const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
             const clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
-
-            currentX = clientX - initialX;
-            currentY = clientY - initialY;
-
+            currentX = clientX - initialX; currentY = clientY - initialY;
             cookiePopup.style.setProperty('--drag-x', currentX + 'px');
             cookiePopup.style.setProperty('--drag-y', currentY + 'px');
         }
 
-        function dragEnd() {
-            isDragging = false;
-        }
+        function dragEnd() { isDragging = false; }
 
-        cookieHeader.addEventListener('mousedown', dragStart);
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', dragEnd);
-        cookieHeader.addEventListener('touchstart', dragStart, { passive: false });
-        document.addEventListener('touchmove', drag, { passive: false });
-        document.addEventListener('touchend', dragEnd);
+        cookieHeader.addEventListener('mousedown', dragStart); document.addEventListener('mousemove', drag); document.addEventListener('mouseup', dragEnd);
+        cookieHeader.addEventListener('touchstart', dragStart, { passive: false }); document.addEventListener('touchmove', drag, { passive: false }); document.addEventListener('touchend', dragEnd);
 
         window.addEventListener('load', () => {
-            if (!localStorage.getItem('cookies_v12')) {
-                setTimeout(() => { cookiePopup.style.display = 'block'; }, 1500);
-            }
+            if (!localStorage.getItem('cookies_v12')) { setTimeout(() => { cookiePopup.style.display = 'block'; }, 1500); }
         });
 
-        // --- WHEEL TOGGLE ---
-        const wheel = document.getElementById('wheel-container');
-        const ppToggle = document.getElementById('pp-toggle');
-        
-        ppToggle.addEventListener('click', (e) => {
-            const isHidden = wheel.classList.contains('opacity-0');
-            if(isHidden) {
-                wheel.classList.remove('opacity-0', 'scale-50', 'pointer-events-none');
-                if(window.trackCustomEvent) window.trackCustomEvent('OpenWheel');
-            } else {
-                wheel.classList.add('opacity-0', 'scale-50', 'pointer-events-none');
-            }
-        });
-
-        // --- EFFET MAGNÉTIQUE ---
-        const magneticWrappers = document.querySelectorAll('.magnetic-wrapper');
-        let mX = 0, mY = 0;
-        document.addEventListener('mousemove', (e) => { mX = e.clientX; mY = e.clientY; });
-
-        function renderMagnetic() {
-            if (!wheel.classList.contains('opacity-0')) {
-                magneticWrappers.forEach(w => {
-                    const r = w.parentElement.getBoundingClientRect();
-                    const centerX = r.left + r.width / 2;
-                    const centerY = r.top + r.height / 2;
-                    const dx = mX - centerX;
-                    const dy = mY - centerY;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    
-                    if (dist < 80) {
-                        w.style.transform = `translate(${dx * 0.35}px, ${dy * 0.35}px)`;
-                    } else {
-                        w.style.transform = `translate(0, 0)`;
-                    }
-                });
-            }
-            requestAnimationFrame(renderMagnetic);
-        }
-        renderMagnetic();
-
-        // --- MATRIX YTB ---
         const c = document.getElementById('ytb-matrix');
         const ctx = c.getContext('2d');
         let drops = [];
-        function initM() {
-            if(c) {
-                c.width = c.parentElement.offsetWidth;
-                c.height = c.parentElement.offsetHeight;
-                drops = Array(Math.floor(c.width/8)).fill(0);
-            }
-        }
-        window.addEventListener('resize', initM);
-        initM();
+        function initM() { if(c) { c.width = c.parentElement.offsetWidth; c.height = c.parentElement.offsetHeight; drops = Array(Math.floor(c.width/8)).fill(0); } }
+        window.addEventListener('resize', initM); initM();
         function drawM() {
             if(!ctx) return;
             ctx.fillStyle = 'rgba(15,15,15,0.3)'; ctx.fillRect(0,0,c.width,c.height);
             ctx.fillStyle = 'rgba(149,255,102,0.5)'; ctx.font = '8px monospace';
             drops.forEach((y, i) => {
                 ctx.fillText(Math.random() > 0.5 ? "1" : "0", i*8, y*8);
-                if(y*8 > c.height && Math.random() > 0.98) drops[i] = 0;
-                else drops[i]++;
+                if(y*8 > c.height && Math.random() > 0.98) drops[i] = 0; else drops[i]++;
             });
         }
         setInterval(drawM, 130);
