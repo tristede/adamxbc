@@ -131,8 +131,10 @@
             <!-- JEU 1 : NEON FLY -->
             <div class="w-full bg-[#0a0a0a] border border-white/10 rounded-2xl p-5 fade-in-up group hover:border-brand/50 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)]" style="animation-delay: 0.3s;">
                 <div class="flex items-center gap-4 mb-5">
-                    <div class="w-16 h-16 rounded-xl bg-brand text-black flex items-center justify-center text-3xl shrink-0 shadow-[0_0_15px_rgba(149,255,102,0.3)] group-hover:scale-105 transition-transform">
-                        <i class="fa-solid fa-meteor"></i>
+                    <div class="w-16 h-16 rounded-xl bg-[#050505] border border-brand/50 text-brand flex items-center justify-center text-3xl shrink-0 shadow-[0_0_15px_rgba(149,255,102,0.3)] group-hover:scale-105 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-7 h-7" fill="currentColor" style="transform: rotate(15deg);">
+                            <rect x="4" y="4" width="16" height="16" />
+                        </svg>
                     </div>
                     <div class="flex flex-col">
                         <span class="text-[9px] text-brand uppercase tracking-widest font-black mb-1 bg-brand/10 inline-block w-max px-2 py-0.5 rounded">Jeu du mois</span>
@@ -150,7 +152,7 @@
                         <span><i class="fa-solid fa-trophy mr-1"></i> Top Scores</span>
                         <span class="text-white/30 text-[8px]">Clique sur l'œil pour spectate</span>
                     </h3>
-                    <div id="leaderboard-list" class="flex flex-col gap-2 max-h-[150px] overflow-y-auto custom-scroll pr-1">
+                    <div id="leaderboard-list" class="flex flex-col gap-2 max-h-[200px] overflow-y-auto custom-scroll pr-1">
                         <div class="text-white/40 text-xs italic py-2 text-center">Chargement...</div>
                     </div>
                 </div>
@@ -339,11 +341,29 @@
                     
                     // Bouton Replay ! Uniquement si s.flaps existe et contient des clics.
                     let replayBtn = (s.flaps && s.flaps.length > 0) ? `<button onclick="startReplay(${i})" class="text-brand hover:text-white transition-colors ml-2" title="Spectate Game"><i class="fa-solid fa-eye"></i></button>` : '';
+                    
+                    // Formatage de la date et l'heure
+                    let dateStr = "";
+                    if (s.timestamp && typeof s.timestamp.toDate === 'function') {
+                        const dateObj = s.timestamp.toDate();
+                        const dateFmt = dateObj.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+                        const timeFmt = dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                        dateStr = `<div class="text-white/30 text-[8px] tracking-widest uppercase mt-0.5">${dateFmt} - ${timeFmt}</div>`;
+                    }
 
                     lbContainer.innerHTML += `
                         <div class="flex justify-between items-center bg-white/5 border border-white/5 rounded-md p-2 mb-2 hover:bg-white/10 transition-colors">
-                            <div class="flex items-center gap-2">${rank}<span class="font-black text-white text-[11px] uppercase">${s.pseudo.substring(0, 12)}</span> ${replayBtn}</div>
-                            <span class="font-black text-brand text-[12px]">${s.score}</span>
+                            <div class="flex items-center gap-3">
+                                <div class="w-5 flex justify-center">${rank}</div>
+                                <div class="flex flex-col">
+                                    <div class="flex items-center">
+                                        <span class="font-black text-white text-[11px] uppercase">${s.pseudo.substring(0, 12)}</span>
+                                        ${replayBtn}
+                                    </div>
+                                    ${dateStr}
+                                </div>
+                            </div>
+                            <span class="font-black text-brand text-[14px] ml-2">${s.score}</span>
                         </div>
                     `;
                 });
