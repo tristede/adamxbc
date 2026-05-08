@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADAMXBC | Mini-Jeux</title>
+    
+    <!-- Favicon Y2K Étoile Verte -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%2395ff66' d='M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z'/></svg>">
+
+    <!-- Polices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <!-- Icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brand: '#95ff66' },
+                    fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'], pixel: ['"Press Start 2P"', 'cursive'] },
+                    animation: { 'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { background-color: #030005; margin: 0; color: #ffffff; overflow-x: hidden; font-family: 'Inter', sans-serif; }
+        .ambient-glow { position: fixed; width: 65vw; height: 65vw; background: radial-gradient(circle, rgba(149,255,102,0.04) 0%, rgba(0,0,0,0) 70%); z-index: 0; pointer-events: none; }
+        .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(17px); } to { opacity: 1; transform: translateY(0px); } }
+        
+        /* Custom scrollbar pour leaderboard */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(149, 255, 102, 0.2); border-radius: 10px; }
+
+        /* Animation Score Pop */
+        @keyframes scorePop { 
+            0% { transform: scale(0.5); opacity: 0; text-shadow: none; } 
+            20% { transform: scale(1.2); opacity: 1; text-shadow: 0 0 15px rgba(149,255,102,0.8); } 
+            80% { transform: scale(1); opacity: 1; text-shadow: 0 0 10px rgba(149,255,102,0.5); }
+            100% { transform: scale(1); opacity: 0; text-shadow: none; } 
+        }
+        .score-pop { animation: scorePop 1s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        /* POPUP COOKIE */
+        #cookie-popup {
+            position: fixed;
+            bottom: 8%;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            width: 90%;
+            max-width: 420px;
+            background-color: #000;
+            border: 2px solid #95ff66;
+            padding: 24px;
+            border-radius: 20px;
+            z-index: 9999;
+            box-shadow: 0 0 40px rgba(0,0,0,0.9);
+            display: none;
+        }
+
+        .mobile-wrapper { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 75px 22px 40px; position: relative; }
+        .blink { animation: blinker 1.5s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+    </style>
+</head>
+<body class="antialiased relative min-h-screen">
+
+    <div class="ambient-glow" style="top: -10%; left: -10%;"></div>
+    <div class="ambient-glow" style="bottom: -10%; right: -10%;"></div>
+
+    <!-- BOUTON RETOUR -->
+    <a href="index.html" class="absolute top-6 left-6 text-white/40 hover:text-brand transition-colors font-black uppercase text-[11px] flex items-center gap-2 z-50 p-2">
+        <i class="fa-solid fa-arrow-left"></i> Retour
+    </a>
+
+    <!-- POPUP COOKIE OBLIGATOIRE -->
+    <div id="cookie-popup">
+        <div id="cookie-header" class="flex items-center gap-3 mb-3 pb-2 border-b border-white/5">
+            <div id="cookie-icon" class="text-[#95ff66]"><i class="fa-solid fa-cookie-bite text-3xl"></i></div>
+            <h2 id="cookie-title" class="font-display font-black text-white text-base uppercase tracking-tighter">Alerte Cookies</h2>
+        </div>
+        <p id="cookie-text" class="text-white/60 text-[10px] font-bold uppercase tracking-wider mb-5 leading-relaxed">
+            Chef, l'accès aux jeux nécessite d'accepter les traceurs pour enregistrer tes scores et tes replays de parties. Tu valides ?
+        </p>
+        <div class="flex gap-3">
+            <button id="btn-cookie-ok" onclick="handleAccept()" class="bg-brand text-black font-black uppercase text-[11px] p-3 rounded-lg flex-1">Ok</button>
+            <button id="btn-cookie-non" onclick="handleRefuse()" class="bg-[#151515] text-white font-black uppercase text-[11px] p-3 rounded-lg flex-1 border border-white/10">Non</button>
+        </div>
+    </div>
+
+    <!-- HUB MENU PRINCIPAL -->
+    <div class="mobile-wrapper z-10">
+        
+        <header class="flex flex-col mb-10 fade-in-up" style="animation-delay: 0.1s;">
+            <h1 class="text-4xl font-display font-black tracking-tighter uppercase text-white leading-none mb-2">Arcade<span class="text-brand">.</span></h1>
+            <p class="text-white/40 text-[10px] uppercase font-bold tracking-widest leading-relaxed">
+                Collection de mini-jeux.
+            </p>
+        </header>
+
+        <!-- INFO FIN DE MOIS -->
+        <div class="w-full flex items-start gap-4 bg-brand/5 border border-brand/20 p-5 rounded-2xl mb-8 fade-in-up shadow-[0_0_20px_rgba(149,255,102,0.05)]" style="animation-delay: 0.2s;">
+            <div class="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-brand shrink-0">
+                <i class="fa-solid fa-trophy text-lg"></i>
+            </div>
+            <p class="text-white/70 text-[10px] uppercase font-bold tracking-widest leading-relaxed mt-0.5">
+                <span class="text-brand font-black">Récompense mensuelle</span><br>
+                Le 1er du classement sera contacté à la fin du mois. Prépare-toi pour un nouveau jeu le mois prochain !
+            </p>
+        </div>
+
+        <main class="flex flex-col gap-5 w-full">
+            <!-- JEU 1 : NEON FLY -->
+            <div class="w-full bg-[#0a0a0a] border border-white/10 rounded-2xl p-5 fade-in-up group hover:border-brand/50 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)]" style="animation-delay: 0.3s;">
+                <div class="flex items-center gap-4 mb-5">
+                    <div class="w-16 h-16 rounded-xl bg-brand text-black flex items-center justify-center text-3xl shrink-0 shadow-[0_0_15px_rgba(149,255,102,0.3)] group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-meteor"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[9px] text-brand uppercase tracking-widest font-black mb-1 bg-brand/10 inline-block w-max px-2 py-0.5 rounded">Jeu du mois</span>
+                        <h3 class="font-display font-black text-2xl uppercase tracking-tighter text-white">Neon Fly</h3>
+                    </div>
+                </div>
+                <p class="text-white/50 text-[11px] font-bold mb-5 leading-relaxed">Esquive les obstacles vert fluo. Attention, les tuyaux bougent à partir de 3 points !</p>
+                <button onclick="openGame()" class="w-full bg-white/5 border border-brand text-brand hover:bg-brand hover:text-black font-black uppercase text-[12px] p-3.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 mb-4">
+                    <i class="fa-solid fa-play"></i> Jouer maintenant
+                </button>
+
+                <!-- SCORE BOARD MINI -->
+                <div class="w-full bg-black/50 border border-white/10 rounded-xl p-4">
+                    <h3 class="font-black text-brand text-[10px] uppercase tracking-widest mb-3 flex items-center justify-between">
+                        <span><i class="fa-solid fa-trophy mr-1"></i> Top Scores</span>
+                        <span class="text-white/30 text-[8px]">Clique sur l'œil pour spectate</span>
+                    </h3>
+                    <div id="leaderboard-list" class="flex flex-col gap-2 max-h-[150px] overflow-y-auto custom-scroll pr-1">
+                        <div class="text-white/40 text-xs italic py-2 text-center">Chargement...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JEU 2 : BIENTÔT -->
+            <div class="w-full bg-[#050505] border border-white/5 rounded-2xl p-5 fade-in-up opacity-50 pointer-events-none" style="animation-delay: 0.4s;">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-16 h-16 rounded-xl bg-white/5 text-white/30 flex items-center justify-center text-3xl shrink-0 border border-white/10">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[9px] text-white/40 uppercase tracking-widest font-black mb-1">Mois prochain</span>
+                        <h3 class="font-display font-black text-xl uppercase tracking-tighter text-white/50">Jeu Secret</h3>
+                    </div>
+                </div>
+                <p class="text-white/30 text-[11px] font-bold">Un nouveau défi sera débloqué très prochainement. Reste à l'affût !</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- OVERLAY DU JEU (CACHE PAR DEFAUT)              -->
+    <!-- ============================================== -->
+    <div id="game-overlay" style="display: none;" class="fixed inset-0 bg-[#030005]/95 backdrop-blur-md z-[3000] flex flex-col items-center justify-center transition-all duration-300 opacity-0 touch-none">
+        
+        <!-- HEADER EN JEU -->
+        <div class="w-full max-w-[360px] flex justify-between items-center mb-4 px-4 relative z-[3050]">
+            <h2 class="font-display font-black text-brand text-2xl uppercase tracking-tighter drop-shadow-[0_0_8px_rgba(149,255,102,0.5)]">Neon Fly</h2>
+            <button onclick="closeGame()" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- REPLAY BANNER (CACHÉ) -->
+        <div id="replay-banner" class="absolute top-0 left-0 w-full bg-brand text-black font-black uppercase text-[10px] p-3 flex justify-between items-center z-[4000] hidden">
+            <span><i class="fa-solid fa-video blink mr-2"></i> Replay : <span id="replay-pseudo" class="font-pixel text-[8px]"></span></span>
+            <button onclick="stopReplay()" class="bg-black text-brand border border-black/20 px-3 py-2 rounded-md hover:bg-black/80 transition-colors">Quitter</button>
+        </div>
+
+        <!-- Game Container -->
+        <div class="relative w-[320px] h-[450px] bg-[#0a0a0a] border-2 border-brand/50 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(149,255,102,0.15)]">
+            
+            <!-- MUTE BUTTON -->
+            <button onclick="toggleMute()" class="absolute top-4 left-4 w-8 h-8 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-brand hover:scale-110 transition-all z-[60]">
+                <i id="mute-icon" class="fa-solid fa-volume-high text-[11px]"></i>
+            </button>
+
+            <!-- Score in-game -->
+            <div id="game-score-display" class="absolute top-5 right-5 font-pixel text-xl text-[#95ff66] z-[25] select-none pointer-events-none opacity-0">0</div>
+            
+            <canvas id="game-canvas" width="320" height="450" class="absolute top-0 left-0 w-full h-full cursor-pointer z-20"></canvas>
+            
+            <!-- Game UI Overlays (Start/GameOver) -->
+            <div id="game-ui-layer" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-5 text-center transition-all">
+                
+                <!-- START SCREEN -->
+                <div id="game-start-ui" class="flex flex-col items-center w-full">
+                    <i class="fa-solid fa-hand-pointer text-brand text-4xl mb-4 animate-pulse-fast"></i>
+                    <p class="font-black uppercase text-[13px] tracking-wider text-white">Touche pour voler</p>
+                </div>
+
+                <!-- GAME OVER SCREEN -->
+                <div id="game-over-ui" class="flex flex-col items-center w-full hidden">
+                    <h3 class="font-display font-black text-white text-3xl uppercase tracking-tighter mb-1">CRASH</h3>
+                    <p class="text-white/60 font-bold uppercase text-[10px] tracking-widest mb-6">Score : <span id="final-score" class="text-brand text-lg">0</span></p>
+
+                    <div id="score-submit-box" class="w-full bg-white/5 border border-brand/30 rounded-xl p-4 mb-4">
+                        <!-- Injecté par JS -->
+                    </div>
+                    
+                    <button onclick="resetGame()" class="w-full bg-[#151515] text-white hover:text-brand font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)]">Rejouer</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- --- LOGIQUE FIREBASE & TRACKING & LEADERBOARD --- -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmUaHrExjtqp7La6AJjJf8Dj4bd6etI14",
+            authDomain: "adamxbc-link.firebaseapp.com",
+            projectId: "adamxbc-link",
+            storageBucket: "adamxbc-link.firebasestorage.app",
+            messagingSenderId: "97287102827",
+            appId: "1:97287102827:web:c74f49538278166cbf6c2e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const leaderboardPath = 'artifacts/adamxbc-linktree/public/data/leaderboard'; 
+
+        window.leaderboardData = []; // Stockage global pour le spectateur
+
+        const initAnalytics = async () => {
+            signInAnonymously(auth).then(() => { window.loadLeaderboard(); });
+        };
+
+        const consent = localStorage.getItem('cookies_v12');
+        if (consent === 'true') {
+            initAnalytics();
+        } else {
+            document.getElementById('leaderboard-list').innerHTML = '<div class="text-brand text-[10px] font-black uppercase text-center mt-2">Accepte les cookies pour jouer et voir le classement !</div>';
+        }
+
+        window.handleAccept = function() { 
+            localStorage.setItem('cookies_v12', 'true'); 
+            document.getElementById('cookie-popup').style.display = 'none'; 
+            initAnalytics();
+            
+            // Si l'utilisateur a accepté depuis la tentative de jouer, on lance le jeu direct
+            if(window.pendingGameLaunch) {
+                window.pendingGameLaunch = false;
+                window.openGame();
+            }
+        }
+
+        window.handleRefuse = function() { 
+            localStorage.setItem('cookies_v12', 'false'); 
+            document.getElementById('cookie-title').style.display = 'none';
+            document.getElementById('cookie-icon').style.display = 'none';
+            document.getElementById('cookie-text').innerText = "Ok, pas de cookies c'est compris. Mais viens me follow sur twitch alors!!";
+            
+            const btnOk = document.getElementById('btn-cookie-ok');
+            const btnNon = document.getElementById('btn-cookie-non');
+            
+            btnOk.innerHTML = '<i class="fa-brands fa-twitch text-sm"></i> Follow';
+            btnOk.className = 'bg-brand text-black font-black uppercase text-[11px] p-3 rounded-lg flex-1 flex items-center justify-center gap-2 transition-transform hover:scale-95';
+            btnOk.onclick = function() { window.open('https://twitch.tv/adamxbc', '_blank'); document.getElementById('cookie-popup').style.display = 'none'; };
+            btnNon.onclick = function() { document.getElementById('cookie-popup').style.display = 'none'; };
+            document.getElementById('leaderboard-list').innerHTML = '<div class="text-brand text-[10px] font-black uppercase text-center mt-2">Accepte les cookies pour jouer et voir le classement !</div>';
+        }
+
+        window.addEventListener('load', () => {
+            if (!localStorage.getItem('cookies_v12')) { setTimeout(() => { document.getElementById('cookie-popup').style.display = 'block'; }, 1000); }
+        });
+
+        window.showSubmitForm = function() {
+            document.getElementById('score-submit-box').innerHTML = `
+                <p class="text-[10px] text-white/70 uppercase font-bold mb-3">Enregistre ton score et ton replay !</p>
+                <input type="text" id="player-pseudo" maxlength="12" placeholder="TON PSEUDO" class="w-full bg-black border border-brand/50 rounded-lg p-3 text-center text-white font-black uppercase text-xs focus:outline-none focus:border-brand mb-3">
+                <button onclick="submitScore()" id="submit-btn" class="w-full bg-brand text-black font-black uppercase text-[11px] p-3 rounded-lg hover:scale-[0.98] transition-transform">Envoyer</button>
+            `;
+        }
+
+        window.loadLeaderboard = async () => {
+            if (!auth.currentUser) return;
+            const lbContainer = document.getElementById('leaderboard-list');
+            try {
+                const querySnapshot = await getDocs(collection(db, leaderboardPath));
+                let scores = [];
+                querySnapshot.forEach((doc) => scores.push(doc.data()));
+                
+                scores.sort((a, b) => b.score - a.score);
+                scores = scores.slice(0, 10);
+                window.leaderboardData = scores; // Sauvegarde pour les replays
+
+                if(scores.length === 0) { lbContainer.innerHTML = '<div class="text-white/40 text-[10px] font-bold uppercase text-center mt-2">Soyez le premier !</div>'; return; }
+
+                lbContainer.innerHTML = '';
+                scores.forEach((s, i) => {
+                    let color = i === 0 ? 'text-[#FFD700]' : (i === 1 ? 'text-[#C0C0C0]' : (i === 2 ? 'text-[#CD7F32]' : 'text-white/60'));
+                    let rank = i < 3 ? `<i class="fa-solid fa-medal ${color}"></i>` : `<span class="text-white/30 text-xs w-[14px] inline-block text-center">${i+1}</span>`;
+                    
+                    // Bouton Replay ! Uniquement si s.flaps existe et contient des clics.
+                    let replayBtn = (s.flaps && s.flaps.length > 0) ? `<button onclick="startReplay(${i})" class="text-brand hover:text-white transition-colors ml-2" title="Spectate Game"><i class="fa-solid fa-eye"></i></button>` : '';
+
+                    lbContainer.innerHTML += `
+                        <div class="flex justify-between items-center bg-white/5 border border-white/5 rounded-md p-2 mb-2 hover:bg-white/10 transition-colors">
+                            <div class="flex items-center gap-2">${rank}<span class="font-black text-white text-[11px] uppercase">${s.pseudo.substring(0, 12)}</span> ${replayBtn}</div>
+                            <span class="font-black text-brand text-[12px]">${s.score}</span>
+                        </div>
+                    `;
+                });
+            } catch(e) { lbContainer.innerHTML = '<div class="text-red-500 text-[10px] font-bold uppercase text-center mt-2">Erreur</div>'; }
+        };
+
+        window.submitScore = async () => {
+            if(localStorage.getItem('cookies_v12') !== 'true') return;
+            const btn = document.getElementById('submit-btn');
+            const input = document.getElementById('player-pseudo');
+            const pseudo = input.value.trim().toUpperCase() || 'ANONYME';
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled = true;
+
+            try {
+                await addDoc(collection(db, leaderboardPath), { 
+                    pseudo: pseudo, 
+                    score: window.currentGameScore, 
+                    seed: window.currentSeed, // Enregistrement de l'aléatoire
+                    flaps: window.currentFlaps, // Enregistrement des clics
+                    timestamp: serverTimestamp() 
+                });
+                document.getElementById('score-submit-box').innerHTML = '<p class="text-brand text-[11px] font-black uppercase text-center py-2"><i class="fa-solid fa-check mr-1"></i> Enregistré avec Replay !</p>';
+                window.loadLeaderboard();
+            } catch(e) { btn.innerHTML = 'Erreur'; }
+        }
+    </script>
+
+    <!-- --- LOGIQUE DU JEU NEON FLY --- -->
+    <script>
+        // Moteur Audio
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const actx = new AudioContext();
+        let isMuted = false;
+
+        window.toggleMute = function() {
+            isMuted = !isMuted;
+            document.getElementById('mute-icon').className = isMuted ? 'fa-solid fa-volume-xmark text-white/50' : 'fa-solid fa-volume-high text-[11px]';
+        };
+
+        function playTone(freq, type, duration, vol=0.01) { 
+            if(isMuted) return;
+            if(actx.state === 'suspended') actx.resume();
+            const osc = actx.createOscillator(); const gain = actx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, actx.currentTime);
+            gain.gain.setValueAtTime(vol, actx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + duration);
+            osc.connect(gain); gain.connect(actx.destination);
+            osc.start(); osc.stop(actx.currentTime + duration);
+        }
+        function sfxJump() { playTone(400, 'square', 0.1, 0.01); playTone(600, 'square', 0.15, 0.01); }
+        function sfxScore() { playTone(800, 'sine', 0.1, 0.01); setTimeout(()=>playTone(1200, 'sine', 0.2, 0.01), 100); }
+        function sfxHit() { playTone(150, 'sawtooth', 0.3, 0.02); }
+
+        // MOTEUR DE REPLAY DEITERMINISTE : Générateur pseudo-aléatoire
+        function splitmix32(a) {
+            return function() {
+              a |= 0; a = a + 0x9e3779b9 | 0;
+              var t = a ^ a >>> 16;
+              t = Math.imul(t, 0x21f0aaad);
+              t = t ^ t >>> 15;
+              t = Math.imul(t, 0x735a2d97);
+              return ((t = t ^ t >>> 15) >>> 0) / 4294967296;
+            }
+        }
+        
+        let randomFunc = Math.random; 
+        window.currentSeed = 0;
+        window.currentFlaps = []; // Enregistre le numéro de frame de chaque clic
+        window.isReplay = false;
+        window.replayFlaps = []; // Clics chargés depuis Firebase
+        window.pendingGameLaunch = false;
+
+        const cvs = document.getElementById('game-canvas');
+        const gameOverlay = document.getElementById('game-overlay');
+        const ctx2 = cvs.getContext('2d');
+        const scoreDisplay = document.getElementById('game-score-display');
+        const uiLayer = document.getElementById('game-ui-layer');
+        const startUI = document.getElementById('game-start-ui');
+        const overUI = document.getElementById('game-over-ui');
+        
+        let frames = 0, gameLoopId; window.currentGameScore = 0; let gameState = 'start'; 
+
+        const bird = {
+            x: 50, y: 150, w: 20, h: 20, velocity: 0, gravity: 0.25, jump: -4.8,
+            draw: function() {
+                ctx2.fillStyle = '#95ff66'; ctx2.shadowColor = '#95ff66'; ctx2.shadowBlur = 15;
+                ctx2.save(); ctx2.translate(this.x + this.w/2, this.y + this.h/2);
+                let rotation = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, (this.velocity * 0.1)));
+                ctx2.rotate(rotation); ctx2.fillRect(-this.w/2, -this.h/2, this.w, this.h);
+                ctx2.restore(); ctx2.shadowBlur = 0; 
+            },
+            update: function() {
+                this.velocity += this.gravity; this.y += this.velocity;
+                if(this.y + this.h >= cvs.height) { this.y = cvs.height - this.h; triggerGameOver(); }
+                if(this.y <= 0) { this.y = 0; this.velocity = 0; }
+            }
+        };
+
+        const pipes = {
+            items: [], w: 45, gap: 140, dx: 2.5, spawnRate: 90, moveSpeed: 0,
+            draw: function() {
+                ctx2.fillStyle = 'rgba(255, 255, 255, 0.1)'; ctx2.strokeStyle = 'rgba(255, 255, 255, 0.5)'; ctx2.lineWidth = 2;
+                for(let i = 0; i < this.items.length; i++) {
+                    let p = this.items[i];
+                    ctx2.fillRect(p.x, 0, this.w, p.top); ctx2.strokeRect(p.x, 0, this.w, p.top);
+                    ctx2.fillRect(p.x, p.top + this.gap, this.w, cvs.height - p.top - this.gap); ctx2.strokeRect(p.x, p.top + this.gap, this.w, cvs.height - p.top - this.gap);
+                }
+            },
+            update: function() {
+                if(frames % this.spawnRate === 0) { 
+                    this.items.push({ x: cvs.width, top: randomFunc() * (cvs.height - this.gap - 60) + 30, passed: false, moveDir: randomFunc() > 0.5 ? 1 : -1 }); 
+                }
+                for(let i = 0; i < this.items.length; i++) {
+                    let p = this.items[i]; p.x -= this.dx;
+                    if (this.moveSpeed > 0) {
+                        p.top += this.moveSpeed * p.moveDir;
+                        if(p.top < 20 || p.top + this.gap > cvs.height - 20) { p.moveDir *= -1; }
+                    }
+                    if(bird.x + bird.w > p.x && bird.x < p.x + this.w && (bird.y < p.top || bird.y + bird.h > p.top + this.gap)) { triggerGameOver(); }
+                    if(p.x + this.w < bird.x && !p.passed) {
+                        window.currentGameScore++; scoreDisplay.innerText = window.currentGameScore; p.passed = true;
+                        sfxScore(); 
+                        scoreDisplay.classList.remove('score-pop'); void scoreDisplay.offsetWidth; scoreDisplay.classList.add('score-pop');
+                        if(window.currentGameScore === 3) { this.moveSpeed = 0.5; }
+                        if(window.currentGameScore > 0 && window.currentGameScore % 5 === 0) {
+                            this.dx += 0.25; if(this.gap > 95) this.gap -= 6; if(this.spawnRate > 55) this.spawnRate -= 5; if(this.moveSpeed > 0) this.moveSpeed += 0.3;
+                        }
+                    }
+                    if(p.x + this.w < 0) { this.items.shift(); i--; }
+                }
+            }
+        };
+
+        let particles = [];
+        function createExplosion(x, y) { for(let i=0; i<20; i++) { particles.push({ x: x, y: y, vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10, life: 1 }); } }
+        function drawParticles() {
+            ctx2.fillStyle = '#95ff66';
+            for(let i=0; i<particles.length; i++) {
+                let p = particles[i]; ctx2.globalAlpha = p.life; ctx2.fillRect(p.x, p.y, 4, 4);
+                p.x += p.vx; p.y += p.vy; p.life -= 0.05; if(p.life <= 0) { particles.splice(i, 1); i--; }
+            }
+            ctx2.globalAlpha = 1;
+        }
+
+        function draw() {
+            ctx2.fillStyle = '#0a0a0a'; ctx2.fillRect(0, 0, cvs.width, cvs.height);
+            ctx2.strokeStyle = 'rgba(149, 255, 102, 0.03)'; ctx2.lineWidth = 1;
+            for(let i = 0; i < cvs.width; i += 20) { ctx2.beginPath(); ctx2.moveTo(i, 0); ctx2.lineTo(i, cvs.height); ctx2.stroke(); }
+            for(let i = 0; i < cvs.height; i += 20) { ctx2.beginPath(); ctx2.moveTo(0, i); ctx2.lineTo(cvs.width, i); ctx2.stroke(); }
+            pipes.draw(); if(gameState !== 'over') bird.draw(); if(gameState === 'over') drawParticles();
+        }
+
+        function update() { if(gameState === 'play') { bird.update(); pipes.update(); } }
+        
+        function loop() { 
+            if(window.isReplay && gameState === 'play') {
+                if(window.replayFlaps.length > 0 && frames === window.replayFlaps[0]) {
+                    flap(null, true); 
+                    window.replayFlaps.shift(); 
+                }
+            }
+            update(); draw(); frames++; gameLoopId = requestAnimationFrame(loop); 
+        }
+
+        function flap(e, isAutoReplay = false) {
+            if (!isAutoReplay && window.isReplay) return;
+            if(e && e.target && (e.target.closest('button') || e.target.tagName === 'INPUT')) return;
+            if(e && e.cancelable) e.preventDefault(); 
+            
+            if(actx.state === 'suspended') actx.resume();
+            
+            if(gameState === 'start') {
+                frames = 0; 
+                if (!window.isReplay) window.currentFlaps.push(frames); 
+                gameState = 'play'; 
+                uiLayer.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => { startUI.classList.add('hidden'); }, 300);
+            }
+            
+            if(gameState === 'play') { 
+                bird.velocity = bird.jump; sfxJump(); 
+                if (!window.isReplay && frames > 0) window.currentFlaps.push(frames); 
+            }
+        }
+        
+        gameOverlay.addEventListener('pointerdown', flap);
+
+        function triggerGameOver() {
+            gameState = 'over'; sfxHit(); createExplosion(bird.x + bird.w/2, bird.y + bird.h/2);
+            document.getElementById('final-score').innerText = window.currentGameScore;
+            
+            const submitBox = document.getElementById('score-submit-box');
+            
+            if (window.isReplay) {
+                submitBox.innerHTML = '<p class="text-brand text-[11px] font-black uppercase text-center py-2">Fin du replay</p>';
+            } else if(window.currentGameScore === 0) {
+                submitBox.innerHTML = '<p class="text-[10px] text-white/50 uppercase font-bold text-center">Fais au moins 1 point pour<br>entrer dans le classement !</p>';
+            } else { 
+                window.showSubmitForm(); 
+            }
+
+            uiLayer.classList.remove('opacity-0', 'pointer-events-none'); overUI.classList.remove('hidden');
+        }
+
+        window.resetGame = function(isReplayInit = false) {
+            bird.y = 150; bird.velocity = 0; pipes.items = []; pipes.dx = 2.5; pipes.gap = 140; pipes.spawnRate = 90; pipes.moveSpeed = 0;
+            window.currentGameScore = 0; scoreDisplay.innerText = 0; scoreDisplay.classList.remove('score-pop'); 
+            frames = 0; particles = []; 
+            
+            overUI.classList.add('hidden'); 
+            
+            if(!isReplayInit) {
+                window.isReplay = false;
+                window.currentSeed = Math.floor(Math.random() * 99999999);
+                randomFunc = splitmix32(window.currentSeed); 
+                window.currentFlaps = []; 
+                document.getElementById('replay-banner').classList.add('hidden');
+                startUI.classList.remove('hidden'); 
+                gameState = 'start';
+                if(window.loadLeaderboard) window.loadLeaderboard();
+            }
+        }
+
+        window.openGame = function() {
+            // VERIFICATION OBLIGATOIRE DES COOKIES
+            if (localStorage.getItem('cookies_v12') !== 'true') {
+                // Restauration de la pop-up de base si elle était en mode troll
+                document.getElementById('cookie-title').style.display = 'block';
+                document.getElementById('cookie-icon').style.display = 'block';
+                document.getElementById('cookie-text').innerText = "Chef, l'accès aux jeux nécessite d'accepter les traceurs pour enregistrer tes scores et tes replays de parties. Tu valides ?";
+                
+                const btnOk = document.getElementById('btn-cookie-ok');
+                const btnNon = document.getElementById('btn-cookie-non');
+                
+                btnOk.innerHTML = 'Ok';
+                btnOk.className = 'bg-brand text-black font-black uppercase text-[11px] p-3 rounded-lg flex-1';
+                btnOk.onclick = handleAccept;
+                
+                btnNon.innerHTML = 'Non';
+                btnNon.onclick = handleRefuse;
+                
+                document.getElementById('cookie-popup').style.display = 'block';
+                window.pendingGameLaunch = true; // Permet de lancer le jeu automatiquement si on dit "Ok"
+                return; // Bloque le lancement du jeu
+            }
+
+            resetGame(); 
+            gameOverlay.style.display = 'flex';
+            setTimeout(() => { gameOverlay.classList.remove('opacity-0'); }, 10);
+            document.body.style.overflow = 'hidden'; 
+            if(!gameLoopId) loop();
+        }
+
+        window.closeGame = function() {
+            gameOverlay.classList.add('opacity-0');
+            setTimeout(() => { 
+                gameOverlay.style.display = 'none'; 
+                cancelAnimationFrame(gameLoopId); gameLoopId = null;
+                resetGame();
+            }, 300);
+            document.body.style.overflow = '';
+        }
+
+        // ==============================================
+        // FONCTION SPECTATEUR (REPLAY)
+        // ==============================================
+        window.startReplay = function(index) {
+            // VERIFICATION OBLIGATOIRE DES COOKIES POUR SPECTATE
+            if (localStorage.getItem('cookies_v12') !== 'true') {
+                window.openGame(); // Appelle la même logique de blocage que pour jouer
+                return;
+            }
+
+            const data = window.leaderboardData[index];
+            if(!data || !data.flaps || data.flaps.length === 0) return;
+
+            resetGame(true); 
+            window.isReplay = true;
+            window.replayFlaps = [...data.flaps]; 
+            
+            window.currentSeed = data.seed;
+            randomFunc = splitmix32(window.currentSeed);
+            
+            document.getElementById('replay-pseudo').innerText = data.pseudo;
+            document.getElementById('replay-banner').classList.remove('hidden');
+            uiLayer.classList.add('opacity-0', 'pointer-events-none');
+            startUI.classList.add('hidden');
+
+            gameState = 'play';
+            gameOverlay.style.display = 'flex';
+            setTimeout(() => { gameOverlay.classList.remove('opacity-0'); }, 10);
+            document.body.style.overflow = 'hidden'; 
+            if(!gameLoopId) loop();
+        }
+
+        window.stopReplay = function() {
+            window.closeGame();
+            document.getElementById('replay-banner').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
