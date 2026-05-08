@@ -22,7 +22,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { brand: '#95ff66' },
+                    colors: { brand: '#95ff66', dash: '#33ccff', fall: '#ff3366', bullet: '#ff9933', parachute: '#ffcc00' },
                     fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'], pixel: ['"Press Start 2P"', 'cursive'] },
                     animation: { 'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
                 }
@@ -213,6 +213,8 @@
                 <div id="game-start-ui" class="flex flex-col items-center w-full">
                     <i class="fa-solid fa-hand-pointer text-brand text-4xl mb-4 animate-pulse-fast"></i>
                     <p class="font-black uppercase text-[13px] tracking-wider text-white">Touche pour voler</p>
+                    <p class="font-bold text-bullet uppercase text-[9px] tracking-widest mt-3">Maintiens : Ralenti</p>
+                    <p class="font-bold text-[#33ccff] uppercase text-[9px] tracking-widest mt-1">Double-clic : Dash !</p>
                 </div>
 
                 <!-- GAME OVER SCREEN -->
@@ -252,11 +254,11 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        // CORRECTION IMPORTANTE : Force l'utilisation du chemin précis pour matcher avec tes Firestore Rules
-        const analyticsPath = 'artifacts/adamxbc-linktree/public/data/analytics';
-        const leaderboardPath = 'artifacts/adamxbc-linktree/public/data/leaderboard'; 
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'adamxbc-linktree';
+        const analyticsPath = `artifacts/${appId}/public/data/analytics`;
+        const leaderboardPath = `artifacts/${appId}/public/data/leaderboard`; 
 
-        window.leaderboardData = []; // Stockage global pour le spectateur
+        window.leaderboardData = []; 
 
         const initAnalytics = async () => {
             try {
@@ -317,7 +319,6 @@
             `;
         }
 
-        // CORRECTION MAJEURE: onSnapshot synchronise le classement en temps réel pour tous les joueurs !
         window.loadLeaderboard = () => {
             if (!auth.currentUser) return;
             const lbContainer = document.getElementById('leaderboard-list');
@@ -329,7 +330,7 @@
                     
                     scores.sort((a, b) => b.score - a.score);
                     scores = scores.slice(0, 10);
-                    window.leaderboardData = scores; // Sauvegarde pour les replays
+                    window.leaderboardData = scores;
 
                     if(scores.length === 0) { 
                         lbContainer.innerHTML = '<div class="text-white/40 text-[10px] font-bold uppercase text-center mt-2">Soyez le premier !</div>'; 
@@ -390,7 +391,13 @@
             btn.disabled = true;
 
             try {
-                if (!auth.currentUser) await signInAnonymously(auth);
+                if (!auth.currentUser) {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                }
                 
                 await addDoc(collection(db, leaderboardPath), { 
                     pseudo: pseudo, 
@@ -402,7 +409,6 @@
                 
                 const submitBox = document.getElementById('score-submit-box');
                 if(submitBox) submitBox.innerHTML = '<p class="text-brand text-[11px] font-black uppercase text-center py-2"><i class="fa-solid fa-check mr-1"></i> Enregistré avec Replay !</p>';
-                // Plus besoin d'appeler window.loadLeaderboard(), onSnapshot s'en charge en direct !
             } catch(e) { 
                 console.error("Erreur de sauvegarde:", e);
                 if(btn) {
@@ -437,6 +443,7 @@
         function sfxJump() { playTone(400, 'square', 0.1, 0.01); playTone(600, 'square', 0.15, 0.01); }
         function sfxScore() { playTone(800, 'sine', 0.1, 0.01); setTimeout(()=>playTone(1200, 'sine', 0.2, 0.01), 100); }
         function sfxHit() { playTone(150, 'sawtooth', 0.3, 0.02); }
+        function sfxDash() { playTone(900, 'sawtooth', 0.1, 0.02); setTimeout(()=>playTone(1200, 'sine', 0.1, 0.02), 50); }
 
         function splitmix32(a) {
             return function() {
@@ -455,6 +462,7 @@
         window.isReplay = false;
         window.replayFlaps = []; 
         window.pendingGameLaunch = false;
+        window.isBulletTime = false; // Flag global pour le ralenti
 
         const cvs = document.getElementById('game-canvas');
         const gameOverlay = document.getElementById('game-overlay');
@@ -467,26 +475,91 @@
         let frames = 0, gameLoopId; window.currentGameScore = 0; let gameState = 'start'; 
         
         let lastTime = 0;
+        let lastClickFrame = -999;
         const fpsInterval = 1000 / 60;
 
         const bird = {
-            x: 50, y: 150, w: 20, h: 20, velocity: 0, gravity: 0.25, jump: -4.8,
+            baseX: 50, x: 50, y: 150, w: 20, h: 20, velocity: 0, gravity: 0.25, jump: -4.8,
+            isHolding: false, holdFrames: 0, dashTimer: 0,
             draw: function() {
-                ctx2.fillStyle = '#95ff66'; ctx2.shadowColor = '#95ff66'; ctx2.shadowBlur = 15;
+                let fillColor = '#95ff66';
+                if (this.dashTimer > 0) fillColor = '#33ccff'; 
+                else if (this.holdFrames > 8) fillColor = '#ff9933'; // Orange: Ralenti
+                
+                ctx2.fillStyle = fillColor; 
+                ctx2.shadowColor = fillColor; 
+                ctx2.shadowBlur = 15;
                 ctx2.save(); ctx2.translate(this.x + this.w/2, this.y + this.h/2);
-                let rotation = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, (this.velocity * 0.1)));
-                ctx2.rotate(rotation); ctx2.fillRect(-this.w/2, -this.h/2, this.w, this.h);
+                
+                let targetRotation;
+                if (this.dashTimer > 0) {
+                    targetRotation = 0; // Point droit devant pendant le dash
+                } else {
+                    targetRotation = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, (this.velocity * 0.1)));
+                }
+                
+                ctx2.rotate(targetRotation); 
+                
+                // Dessine une traînée de vitesse pendant le dash
+                if (this.dashTimer > 0) {
+                    ctx2.fillStyle = 'rgba(51, 204, 255, 0.4)';
+                    ctx2.fillRect(-this.w/2 - 15, -this.h/2 + 2, this.w, this.h - 4);
+                    ctx2.fillStyle = 'rgba(51, 204, 255, 0.15)';
+                    ctx2.fillRect(-this.w/2 - 30, -this.h/2 + 4, this.w, this.h - 8);
+                }
+                
+                ctx2.fillStyle = fillColor;
+                ctx2.fillRect(-this.w/2, -this.h/2, this.w, this.h);
                 ctx2.restore(); ctx2.shadowBlur = 0; 
             },
             update: function() {
-                this.velocity += this.gravity; this.y += this.velocity;
-                if(this.y + this.h >= cvs.height) { this.y = cvs.height - this.h; triggerGameOver(); }
-                if(this.y <= 0) { this.y = 0; this.velocity = 0; }
+                if (this.isHolding && this.dashTimer === 0) {
+                    this.holdFrames++;
+                } else {
+                    this.holdFrames = 0;
+                }
+
+                // Réinitialise les effets des pouvoirs
+                window.isBulletTime = false;
+                let currentGravity = this.gravity;
+
+                // Mécanique de DASH
+                if (this.dashTimer > 0) {
+                    this.dashTimer--;
+                    this.x += 1.5; 
+                    if (this.x > 80) this.x = 80; 
+                    this.velocity = 0; 
+                } else {
+                    if (this.x > this.baseX) {
+                        this.x -= 1.5;
+                        if (this.x < this.baseX) this.x = this.baseX;
+                    }
+                    
+                    // APPLICATION DU POUVOIR (après ~130ms de maintien)
+                    if (this.holdFrames > 8) {
+                        // BULLET TIME (Orange) : Ralenti le monde, gravité lunaire
+                        window.isBulletTime = true;
+                        currentGravity = this.gravity * 0.4;
+                    }
+
+                    this.velocity += currentGravity; 
+                    if (this.velocity > 9) this.velocity = 9;
+                }
+                
+                this.y += this.velocity;
+                
+                // Effet portail (Pac-Man wrap-around) : Seuls les tuyaux tuent
+                if (this.y > cvs.height) { 
+                    this.y = -this.h; 
+                } else if (this.y + this.h < 0) { 
+                    this.y = cvs.height; 
+                }
             }
         };
 
         const pipes = {
             items: [], w: 45, gap: 140, dx: 2.5, spawnRate: 90, moveSpeed: 0,
+            distanceAccumulator: 225, 
             draw: function() {
                 ctx2.fillStyle = 'rgba(255, 255, 255, 0.1)'; ctx2.strokeStyle = 'rgba(255, 255, 255, 0.5)'; ctx2.lineWidth = 2;
                 for(let i = 0; i < this.items.length; i++) {
@@ -496,23 +569,50 @@
                 }
             },
             update: function() {
-                if(frames % this.spawnRate === 0) { 
+                // Vitesse dynamique selon le Dash ou le Bullet Time
+                let currentDx = this.dx;
+                if (bird.dashTimer > 0) {
+                    currentDx = this.dx * 3; // Dash: Accélération x3
+                } else if (window.isBulletTime) {
+                    currentDx = this.dx * 0.4; // Bullet Time: Ralenti à 40%
+                }
+
+                // Génération basée sur la distance parcourue
+                this.distanceAccumulator += currentDx;
+                let requiredDist = this.spawnRate * this.dx;
+
+                if(this.distanceAccumulator >= requiredDist) { 
+                    this.distanceAccumulator -= requiredDist;
                     this.items.push({ x: cvs.width, top: randomFunc() * (cvs.height - this.gap - 60) + 30, passed: false, moveDir: randomFunc() > 0.5 ? 1 : -1 }); 
                 }
+
                 for(let i = 0; i < this.items.length; i++) {
-                    let p = this.items[i]; p.x -= this.dx;
+                    let p = this.items[i]; 
+                    p.x -= currentDx;
+
                     if (this.moveSpeed > 0) {
-                        p.top += this.moveSpeed * p.moveDir;
+                        let currentMove = this.moveSpeed * (currentDx / this.dx); 
+                        p.top += currentMove * p.moveDir;
                         if(p.top < 20 || p.top + this.gap > cvs.height - 20) { p.moveDir *= -1; }
                     }
-                    if(bird.x + bird.w > p.x && bird.x < p.x + this.w && (bird.y < p.top || bird.y + bird.h > p.top + this.gap)) { triggerGameOver(); }
+
+                    // Collision (Le joueur est vulnérable)
+                    if(bird.x + bird.w > p.x && bird.x < p.x + this.w && (bird.y < p.top || bird.y + bird.h > p.top + this.gap)) { 
+                        triggerGameOver(); 
+                    }
+
                     if(p.x + this.w < bird.x && !p.passed) {
                         window.currentGameScore++; scoreDisplay.innerText = window.currentGameScore; p.passed = true;
                         sfxScore(); 
                         scoreDisplay.classList.remove('score-pop'); void scoreDisplay.offsetWidth; scoreDisplay.classList.add('score-pop');
-                        if(window.currentGameScore === 3) { this.moveSpeed = 0.5; }
-                        if(window.currentGameScore > 0 && window.currentGameScore % 5 === 0) {
-                            this.dx += 0.25; if(this.gap > 95) this.gap -= 6; if(this.spawnRate > 55) this.spawnRate -= 5; if(this.moveSpeed > 0) this.moveSpeed += 0.3;
+                        
+                        // NOUVELLE DIFFICULTÉ : Mouvement vertical à 2, puis évolution tous les 2 points
+                        if(window.currentGameScore === 2) { this.moveSpeed = 0.5; }
+                        if(window.currentGameScore > 0 && window.currentGameScore % 2 === 0) {
+                            this.dx += 0.15; // Accélération plus douce car plus fréquente
+                            if(this.gap > 95) this.gap -= 4; 
+                            if(this.spawnRate > 55) this.spawnRate -= 3; 
+                            if(this.moveSpeed > 0) this.moveSpeed += 0.15;
                         }
                     }
                     if(p.x + this.w < 0) { this.items.shift(); i--; }
@@ -551,9 +651,24 @@
                 lastTime = timestamp - (elapsed % fpsInterval);
 
                 if(window.isReplay && gameState === 'play') {
-                    if(window.replayFlaps.length > 0 && frames === window.replayFlaps[0]) {
-                        flap(null, true); 
-                        window.replayFlaps.shift(); 
+                    // Vérifie toutes les actions de la frame actuelle
+                    while(window.replayFlaps.length > 0) {
+                        let nextAction = window.replayFlaps[0];
+                        let actionFrame = typeof nextAction === 'number' ? nextAction : nextAction.f;
+                        
+                        if (frames === actionFrame) {
+                            if (typeof nextAction === 'number') {
+                                handleInput('down', null, true);
+                                handleInput('up', null, true); 
+                            } else {
+                                handleInput(nextAction.t === 'd' ? 'down' : 'up', null, true);
+                            }
+                            window.replayFlaps.shift(); 
+                        } else if (frames > actionFrame) {
+                            window.replayFlaps.shift(); 
+                        } else {
+                            break; 
+                        }
                     }
                 }
                 update(); 
@@ -561,29 +676,51 @@
                 frames++; 
             }
         }
-
-        function flap(e, isAutoReplay = false) {
+        // Nouveau système d'Input avec détection de Double Clic (Dash) et Switch de Pouvoir
+        function handleInput(type, e, isAutoReplay = false) {
             if (!isAutoReplay && window.isReplay) return;
             if(e && e.target && (e.target.closest('button') || e.target.tagName === 'INPUT')) return;
-            if(e && e.cancelable) e.preventDefault(); 
             
-            if(actx.state === 'suspended') actx.resume();
-            
-            if(gameState === 'start') {
-                frames = 0; 
-                if (!window.isReplay) window.currentFlaps.push(frames); 
-                gameState = 'play'; 
-                uiLayer.classList.add('opacity-0', 'pointer-events-none');
-                setTimeout(() => { startUI.classList.add('hidden'); }, 300);
-            }
-            
-            if(gameState === 'play') { 
-                bird.velocity = bird.jump; sfxJump(); 
-                if (!window.isReplay && frames > 0) window.currentFlaps.push(frames); 
+            if (type === 'down') {
+                if(e && e.cancelable) e.preventDefault(); 
+                if(actx.state === 'suspended') actx.resume();
+                
+                if(gameState === 'start') {
+                    frames = 0; 
+                    lastClickFrame = frames;
+                    if (!window.isReplay) window.currentFlaps.push({f: frames, t: 'd'}); 
+                    gameState = 'play'; 
+                    bird.isHolding = true; bird.holdFrames = 0;
+                    uiLayer.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => { startUI.classList.add('hidden'); }, 300);
+                } else if(gameState === 'play') { 
+                    
+                    // Détection du DOUBLE CLIC 
+                    if (frames - lastClickFrame < 15 && bird.dashTimer === 0) {
+                        bird.dashTimer = 18; 
+                        sfxDash();
+                    } else {
+                        bird.velocity = bird.jump; 
+                        sfxJump(); 
+                    }
+
+                    bird.isHolding = true; 
+                    bird.holdFrames = 0;
+                    lastClickFrame = frames;
+
+                    if (!window.isReplay && frames > 0) window.currentFlaps.push({f: frames, t: 'd'}); 
+                }
+            } else if (type === 'up') {
+                if(gameState === 'play') {
+                    bird.isHolding = false;
+                    if (!window.isReplay && frames > 0) window.currentFlaps.push({f: frames, t: 'u'}); 
+                }
             }
         }
         
-        gameOverlay.addEventListener('pointerdown', flap);
+        gameOverlay.addEventListener('pointerdown', (e) => handleInput('down', e));
+        gameOverlay.addEventListener('pointerup', (e) => handleInput('up', e));
+        gameOverlay.addEventListener('pointercancel', (e) => handleInput('up', e));
 
         function triggerGameOver() {
             gameState = 'over'; sfxHit(); createExplosion(bird.x + bird.w/2, bird.y + bird.h/2);
@@ -603,9 +740,12 @@
         }
 
         window.resetGame = function(isReplayInit = false) {
-            bird.y = 150; bird.velocity = 0; pipes.items = []; pipes.dx = 2.5; pipes.gap = 140; pipes.spawnRate = 90; pipes.moveSpeed = 0;
+            bird.x = 50; bird.y = 150; bird.velocity = 0; bird.isHolding = false; bird.holdFrames = 0; bird.dashTimer = 0;
+            window.isBulletTime = false;
+            pipes.items = []; pipes.dx = 2.5; pipes.gap = 140; pipes.spawnRate = 90; pipes.moveSpeed = 0;
+            pipes.distanceAccumulator = pipes.spawnRate * pipes.dx; // Prépare le premier tuyau
             window.currentGameScore = 0; scoreDisplay.innerText = 0; scoreDisplay.classList.remove('score-pop'); 
-            frames = 0; particles = []; 
+            frames = 0; lastClickFrame = -999; particles = []; 
             
             overUI.classList.add('hidden'); 
             
