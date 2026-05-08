@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ADAMXBC | Mini-Jeux</title>
     
     <!-- Favicon Y2K Étoile Verte -->
@@ -71,6 +71,14 @@
         .mobile-wrapper { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 75px 22px 40px; position: relative; }
         .blink { animation: blinker 1.5s linear infinite; }
         @keyframes blinker { 50% { opacity: 0; } }
+        
+        /* Anti Double-Tap Zoom */
+        #game-overlay, #game-canvas {
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
     </style>
 </head>
 <body class="antialiased relative min-h-screen">
@@ -207,7 +215,7 @@
 
                 <!-- GAME OVER SCREEN -->
                 <div id="game-over-ui" class="flex flex-col items-center w-full hidden">
-                    <h3 class="font-display font-black text-white text-3xl uppercase tracking-tighter mb-1">CRASH</h3>
+                    <h3 class="font-display font-black text-white text-3xl uppercase tracking-tighter mb-1">GAME OVER</h3>
                     <p class="text-white/60 font-bold uppercase text-[10px] tracking-widest mb-6">Score : <span id="final-score" class="text-brand text-lg">0</span></p>
 
                     <div id="score-submit-box" class="w-full bg-white/5 border border-brand/30 rounded-xl p-4 mb-4">
@@ -225,10 +233,11 @@
     <!-- --- LOGIQUE FIREBASE & TRACKING & LEADERBOARD --- -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = {
+        // Utilise la configuration de l'environnement Canvas ou la tienne par défaut
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyBmUaHrExjtqp7La6AJjJf8Dj4bd6etI14",
             authDomain: "adamxbc-link.firebaseapp.com",
             projectId: "adamxbc-link",
@@ -240,12 +249,26 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const leaderboardPath = 'artifacts/adamxbc-linktree/public/data/leaderboard'; 
+        
+        // Assure les bons chemins de collection selon l'environnement
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'adamxbc-linktree';
+        const analyticsPath = `artifacts/${appId}/public/data/analytics`;
+        const leaderboardPath = `artifacts/${appId}/public/data/leaderboard`; 
 
         window.leaderboardData = []; // Stockage global pour le spectateur
 
         const initAnalytics = async () => {
-            signInAnonymously(auth).then(() => { window.loadLeaderboard(); });
+            try {
+                // Initialisation sécurisée de l'authentification
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                window.loadLeaderboard();
+            } catch (e) {
+                console.error("Erreur d'authentification :", e);
+            }
         };
 
         const consent = localStorage.getItem('cookies_v12');
@@ -331,11 +354,19 @@
             if(localStorage.getItem('cookies_v12') !== 'true') return;
             const btn = document.getElementById('submit-btn');
             const input = document.getElementById('player-pseudo');
+            
+            // Sécurité anti-crash au cas où les éléments auraient disparu (clic multiple)
+            if(!btn || !input) return; 
+            
             const pseudo = input.value.trim().toUpperCase() || 'ANONYME';
             
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
+            btn.disabled = true;
 
             try {
+                // On s'assure que l'utilisateur est bien connecté avant d'écrire
+                if (!auth.currentUser) await signInAnonymously(auth);
+                
                 await addDoc(collection(db, leaderboardPath), { 
                     pseudo: pseudo, 
                     score: window.currentGameScore, 
@@ -343,9 +374,17 @@
                     flaps: window.currentFlaps, // Enregistrement des clics
                     timestamp: serverTimestamp() 
                 });
-                document.getElementById('score-submit-box').innerHTML = '<p class="text-brand text-[11px] font-black uppercase text-center py-2"><i class="fa-solid fa-check mr-1"></i> Enregistré avec Replay !</p>';
+                
+                const submitBox = document.getElementById('score-submit-box');
+                if(submitBox) submitBox.innerHTML = '<p class="text-brand text-[11px] font-black uppercase text-center py-2"><i class="fa-solid fa-check mr-1"></i> Enregistré avec Replay !</p>';
                 window.loadLeaderboard();
-            } catch(e) { btn.innerHTML = 'Erreur'; }
+            } catch(e) { 
+                console.error("Erreur de sauvegarde:", e);
+                if(btn) {
+                    btn.innerHTML = 'ERREUR'; 
+                    btn.disabled = false; // Permet au joueur de réessayer
+                }
+            }
         }
     </script>
 
@@ -403,6 +442,10 @@
         const overUI = document.getElementById('game-over-ui');
         
         let frames = 0, gameLoopId; window.currentGameScore = 0; let gameState = 'start'; 
+        
+        // SYSTEME DE LIMITATION A 60 FPS (Résout le problème de vitesse sur PC Gamer 144Hz)
+        let lastTime = 0;
+        const fpsInterval = 1000 / 60;
 
         const bird = {
             x: 50, y: 150, w: 20, h: 20, velocity: 0, gravity: 0.25, jump: -4.8,
@@ -476,14 +519,26 @@
 
         function update() { if(gameState === 'play') { bird.update(); pipes.update(); } }
         
-        function loop() { 
-            if(window.isReplay && gameState === 'play') {
-                if(window.replayFlaps.length > 0 && frames === window.replayFlaps[0]) {
-                    flap(null, true); 
-                    window.replayFlaps.shift(); 
+        function loop(timestamp) { 
+            gameLoopId = requestAnimationFrame(loop); 
+            
+            if (!timestamp) timestamp = performance.now();
+            let elapsed = timestamp - lastTime;
+            
+            // On s'assure de ne jouer le jeu qu'à 60 images par seconde MAXIMUM
+            if (elapsed > fpsInterval) {
+                lastTime = timestamp - (elapsed % fpsInterval);
+
+                if(window.isReplay && gameState === 'play') {
+                    if(window.replayFlaps.length > 0 && frames === window.replayFlaps[0]) {
+                        flap(null, true); 
+                        window.replayFlaps.shift(); 
+                    }
                 }
+                update(); 
+                draw(); 
+                frames++; 
             }
-            update(); draw(); frames++; gameLoopId = requestAnimationFrame(loop); 
         }
 
         function flap(e, isAutoReplay = false) {
@@ -548,7 +603,6 @@
         window.openGame = function() {
             // VERIFICATION OBLIGATOIRE DES COOKIES
             if (localStorage.getItem('cookies_v12') !== 'true') {
-                // Restauration de la pop-up de base si elle était en mode troll
                 document.getElementById('cookie-title').style.display = 'block';
                 document.getElementById('cookie-icon').style.display = 'block';
                 document.getElementById('cookie-text').innerText = "Chef, l'accès aux jeux nécessite d'accepter les traceurs pour enregistrer tes scores et tes replays de parties. Tu valides ?";
@@ -564,15 +618,18 @@
                 btnNon.onclick = handleRefuse;
                 
                 document.getElementById('cookie-popup').style.display = 'block';
-                window.pendingGameLaunch = true; // Permet de lancer le jeu automatiquement si on dit "Ok"
-                return; // Bloque le lancement du jeu
+                window.pendingGameLaunch = true; 
+                return; 
             }
 
             resetGame(); 
             gameOverlay.style.display = 'flex';
             setTimeout(() => { gameOverlay.classList.remove('opacity-0'); }, 10);
             document.body.style.overflow = 'hidden'; 
-            if(!gameLoopId) loop();
+            if(!gameLoopId) {
+                lastTime = performance.now();
+                gameLoopId = requestAnimationFrame(loop);
+            }
         }
 
         window.closeGame = function() {
@@ -589,9 +646,8 @@
         // FONCTION SPECTATEUR (REPLAY)
         // ==============================================
         window.startReplay = function(index) {
-            // VERIFICATION OBLIGATOIRE DES COOKIES POUR SPECTATE
             if (localStorage.getItem('cookies_v12') !== 'true') {
-                window.openGame(); // Appelle la même logique de blocage que pour jouer
+                window.openGame(); 
                 return;
             }
 
@@ -614,7 +670,10 @@
             gameOverlay.style.display = 'flex';
             setTimeout(() => { gameOverlay.classList.remove('opacity-0'); }, 10);
             document.body.style.overflow = 'hidden'; 
-            if(!gameLoopId) loop();
+            if(!gameLoopId) {
+                lastTime = performance.now();
+                gameLoopId = requestAnimationFrame(loop);
+            }
         }
 
         window.stopReplay = function() {
