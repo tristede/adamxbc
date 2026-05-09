@@ -22,7 +22,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { brand: '#95ff66', dash: '#33ccff', fall: '#ff3366', bullet: '#ff9933', parachute: '#ffcc00' },
+                    colors: { brand: '#95ff66', dash: '#33ccff', rewind: '#ffd700' },
                     fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'], pixel: ['"Press Start 2P"', 'cursive'] },
                     animation: { 'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
                 }
@@ -148,10 +148,17 @@
 
                 <!-- SCORE BOARD MINI -->
                 <div class="w-full bg-black/50 border border-white/10 rounded-xl p-4">
-                    <h3 class="font-black text-brand text-[10px] uppercase tracking-widest mb-3 flex items-center justify-between">
-                        <span><i class="fa-solid fa-trophy mr-1"></i> Top Scores</span>
-                        <span class="text-white/30 text-[8px]">Clique sur l'œil pour spectate</span>
-                    </h3>
+                    <div class="flex justify-between items-end mb-3">
+                        <h3 class="font-black text-brand text-[10px] uppercase tracking-widest flex items-center gap-2">
+                            <i class="fa-solid fa-trophy"></i> Top Scores
+                        </h3>
+                        <div class="flex gap-2 text-[8px] font-black uppercase tracking-widest">
+                            <button id="sort-score-btn" onclick="setSortMode('score')" class="text-brand">Par Score</button>
+                            <span class="text-white/30">|</span>
+                            <button id="sort-date-btn" onclick="setSortMode('date')" class="text-white/30 hover:text-white transition-colors">Récent</button>
+                        </div>
+                    </div>
+                    <div class="text-white/30 text-[8px] mb-2 text-right">Clique sur l'œil pour spectate</div>
                     <div id="leaderboard-list" class="flex flex-col gap-2 max-h-[200px] overflow-y-auto custom-scroll pr-1">
                         <div class="text-white/40 text-xs italic py-2 text-center">Chargement...</div>
                     </div>
@@ -213,7 +220,7 @@
                 <div id="game-start-ui" class="flex flex-col items-center w-full">
                     <i class="fa-solid fa-hand-pointer text-brand text-4xl mb-4 animate-pulse-fast"></i>
                     <p class="font-black uppercase text-[13px] tracking-wider text-white">Touche pour voler</p>
-                    <p class="font-bold text-bullet uppercase text-[9px] tracking-widest mt-3">Maintiens : Ralenti</p>
+                    <p class="font-bold text-rewind uppercase text-[9px] tracking-widest mt-3">Maintiens : Rembobiner !</p>
                     <p class="font-bold text-[#33ccff] uppercase text-[9px] tracking-widest mt-1">Double-clic : Dash !</p>
                 </div>
 
@@ -237,11 +244,11 @@
     <!-- --- LOGIQUE FIREBASE & TRACKING & LEADERBOARD --- -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Configuration Firebase
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+        // Configuration Firebase Directe (Sans la protection)
+        const firebaseConfig = {
             apiKey: "AIzaSyBmUaHrExjtqp7La6AJjJf8Dj4bd6etI14",
             authDomain: "adamxbc-link.firebaseapp.com",
             projectId: "adamxbc-link",
@@ -254,19 +261,17 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'adamxbc-linktree';
-        const analyticsPath = `artifacts/${appId}/public/data/analytics`;
-        const leaderboardPath = `artifacts/${appId}/public/data/leaderboard`; 
+        // Chemins directs vers ta vraie base de données
+        const analyticsPath = 'artifacts/adamxbc-linktree/public/data/analytics';
+        const leaderboardPath = 'artifacts/adamxbc-linktree/public/data/leaderboard'; 
 
         window.leaderboardData = []; 
+        window.allFetchedScores = [];
+        window.currentSortMode = 'score';
 
         const initAnalytics = async () => {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                await signInAnonymously(auth);
                 window.loadLeaderboard();
             } catch (e) {
                 console.error("Erreur d'authentification :", e);
@@ -319,55 +324,82 @@
             `;
         }
 
+        window.setSortMode = function(mode) {
+            window.currentSortMode = mode;
+            document.getElementById('sort-score-btn').className = mode === 'score' ? 'text-brand' : 'text-white/30 hover:text-white transition-colors';
+            document.getElementById('sort-date-btn').className = mode === 'date' ? 'text-brand' : 'text-white/30 hover:text-white transition-colors';
+            window.renderLeaderboard();
+        }
+
+        window.renderLeaderboard = function() {
+            const lbContainer = document.getElementById('leaderboard-list');
+            if(window.allFetchedScores.length === 0) { 
+                lbContainer.innerHTML = '<div class="text-white/40 text-[10px] font-bold uppercase text-center mt-2">Soyez le premier !</div>'; 
+                return; 
+            }
+
+            let scores = [...window.allFetchedScores];
+            
+            if (window.currentSortMode === 'score') {
+                scores.sort((a, b) => b.score - a.score);
+            } else {
+                scores.sort((a, b) => {
+                    let tA = a.timestamp ? (typeof a.timestamp.toDate === 'function' ? a.timestamp.toDate().getTime() : 0) : 0;
+                    let tB = b.timestamp ? (typeof b.timestamp.toDate === 'function' ? b.timestamp.toDate().getTime() : 0) : 0;
+                    return tB - tA; // Du plus récent au plus ancien
+                });
+            }
+            
+            scores = scores.slice(0, 10);
+            window.leaderboardData = scores;
+
+            lbContainer.innerHTML = '';
+            scores.forEach((s, i) => {
+                let rank = '';
+                if (window.currentSortMode === 'score') {
+                    let color = i === 0 ? 'text-[#FFD700]' : (i === 1 ? 'text-[#C0C0C0]' : (i === 2 ? 'text-[#CD7F32]' : 'text-white/60'));
+                    rank = i < 3 ? `<i class="fa-solid fa-medal ${color}"></i>` : `<span class="text-white/30 text-xs w-[14px] inline-block text-center">${i+1}</span>`;
+                } else {
+                    rank = `<span class="text-white/30 text-xs w-[14px] inline-block text-center">${i+1}</span>`;
+                }
+                
+                let replayBtn = (s.flaps && s.flaps.length > 0) ? `<button onclick="startReplay(${i})" class="text-brand hover:text-white transition-colors ml-2" title="Spectate Game"><i class="fa-solid fa-eye"></i></button>` : '';
+                
+                let dateStr = "";
+                if (s.timestamp && typeof s.timestamp.toDate === 'function') {
+                    const dateObj = s.timestamp.toDate();
+                    const dateFmt = dateObj.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+                    const timeFmt = dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                    dateStr = `<div class="text-white/30 text-[8px] tracking-widest uppercase mt-0.5">${dateFmt} - ${timeFmt}</div>`;
+                }
+
+                lbContainer.innerHTML += `
+                    <div class="flex justify-between items-center bg-white/5 border border-white/5 rounded-md p-2 mb-2 hover:bg-white/10 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-5 flex justify-center">${rank}</div>
+                            <div class="flex flex-col">
+                                <div class="flex items-center">
+                                    <span class="font-black text-white text-[11px] uppercase">${s.pseudo.substring(0, 12)}</span>
+                                    ${replayBtn}
+                                </div>
+                                ${dateStr}
+                            </div>
+                        </div>
+                        <span class="font-black text-brand text-[14px] ml-2">${s.score}</span>
+                    </div>
+                `;
+            });
+        };
+
         window.loadLeaderboard = () => {
             if (!auth.currentUser) return;
             const lbContainer = document.getElementById('leaderboard-list');
             
             try {
                 onSnapshot(collection(db, leaderboardPath), (querySnapshot) => {
-                    let scores = [];
-                    querySnapshot.forEach((doc) => scores.push(doc.data()));
-                    
-                    scores.sort((a, b) => b.score - a.score);
-                    scores = scores.slice(0, 10);
-                    window.leaderboardData = scores;
-
-                    if(scores.length === 0) { 
-                        lbContainer.innerHTML = '<div class="text-white/40 text-[10px] font-bold uppercase text-center mt-2">Soyez le premier !</div>'; 
-                        return; 
-                    }
-
-                    lbContainer.innerHTML = '';
-                    scores.forEach((s, i) => {
-                        let color = i === 0 ? 'text-[#FFD700]' : (i === 1 ? 'text-[#C0C0C0]' : (i === 2 ? 'text-[#CD7F32]' : 'text-white/60'));
-                        let rank = i < 3 ? `<i class="fa-solid fa-medal ${color}"></i>` : `<span class="text-white/30 text-xs w-[14px] inline-block text-center">${i+1}</span>`;
-                        
-                        let replayBtn = (s.flaps && s.flaps.length > 0) ? `<button onclick="startReplay(${i})" class="text-brand hover:text-white transition-colors ml-2" title="Spectate Game"><i class="fa-solid fa-eye"></i></button>` : '';
-                        
-                        let dateStr = "";
-                        if (s.timestamp && typeof s.timestamp.toDate === 'function') {
-                            const dateObj = s.timestamp.toDate();
-                            const dateFmt = dateObj.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' });
-                            const timeFmt = dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                            dateStr = `<div class="text-white/30 text-[8px] tracking-widest uppercase mt-0.5">${dateFmt} - ${timeFmt}</div>`;
-                        }
-
-                        lbContainer.innerHTML += `
-                            <div class="flex justify-between items-center bg-white/5 border border-white/5 rounded-md p-2 mb-2 hover:bg-white/10 transition-colors">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-5 flex justify-center">${rank}</div>
-                                    <div class="flex flex-col">
-                                        <div class="flex items-center">
-                                            <span class="font-black text-white text-[11px] uppercase">${s.pseudo.substring(0, 12)}</span>
-                                            ${replayBtn}
-                                        </div>
-                                        ${dateStr}
-                                    </div>
-                                </div>
-                                <span class="font-black text-brand text-[14px] ml-2">${s.score}</span>
-                            </div>
-                        `;
-                    });
+                    window.allFetchedScores = [];
+                    querySnapshot.forEach((doc) => window.allFetchedScores.push(doc.data()));
+                    window.renderLeaderboard();
                 }, (error) => {
                     console.error("Erreur de synchro: ", error);
                     lbContainer.innerHTML = '<div class="text-red-500 text-[10px] font-bold uppercase text-center mt-2">Erreur réseau</div>';
@@ -392,11 +424,7 @@
 
             try {
                 if (!auth.currentUser) {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
+                    await signInAnonymously(auth);
                 }
                 
                 await addDoc(collection(db, leaderboardPath), { 
@@ -445,24 +473,22 @@
         function sfxHit() { playTone(150, 'sawtooth', 0.3, 0.02); }
         function sfxDash() { playTone(900, 'sawtooth', 0.1, 0.02); setTimeout(()=>playTone(1200, 'sine', 0.1, 0.02), 50); }
 
-        function splitmix32(a) {
-            return function() {
-              a |= 0; a = a + 0x9e3779b9 | 0;
-              var t = a ^ a >>> 16;
-              t = Math.imul(t, 0x21f0aaad);
-              t = t ^ t >>> 15;
-              t = Math.imul(t, 0x735a2d97);
-              return ((t = t ^ t >>> 15) >>> 0) / 4294967296;
-            }
+        window.rngState = 0;
+        function randomFunc() {
+            window.rngState |= 0; window.rngState = window.rngState + 0x9e3779b9 | 0;
+            var t = window.rngState ^ window.rngState >>> 16;
+            t = Math.imul(t, 0x21f0aaad);
+            t = t ^ t >>> 15;
+            t = Math.imul(t, 0x735a2d97);
+            return ((t = t ^ t >>> 15) >>> 0) / 4294967296;
         }
         
-        let randomFunc = Math.random; 
         window.currentSeed = 0;
         window.currentFlaps = []; 
         window.isReplay = false;
         window.replayFlaps = []; 
         window.pendingGameLaunch = false;
-        window.isBulletTime = false; // Flag global pour le ralenti
+        window.stateHistory = [];
 
         const cvs = document.getElementById('game-canvas');
         const gameOverlay = document.getElementById('game-overlay');
@@ -475,29 +501,22 @@
         let frames = 0, gameLoopId; window.currentGameScore = 0; let gameState = 'start'; 
         
         let lastTime = 0;
+        let accumulator = 0;
+        const timeStep = 1000 / 60;
         let lastClickFrame = -999;
-        const fpsInterval = 1000 / 60;
 
         const bird = {
             baseX: 50, x: 50, y: 150, w: 20, h: 20, velocity: 0, gravity: 0.25, jump: -4.8,
             isHolding: false, holdFrames: 0, dashTimer: 0,
             draw: function() {
-                let fillColor = '#95ff66';
-                if (this.dashTimer > 0) fillColor = '#33ccff'; 
-                else if (this.holdFrames > 8) fillColor = '#ff9933'; // Orange: Ralenti
+                let fillColor = this.dashTimer > 0 ? '#33ccff' : (this.holdFrames > 8 ? '#ffd700' : '#95ff66');
                 
                 ctx2.fillStyle = fillColor; 
                 ctx2.shadowColor = fillColor; 
                 ctx2.shadowBlur = 15;
                 ctx2.save(); ctx2.translate(this.x + this.w/2, this.y + this.h/2);
                 
-                let targetRotation;
-                if (this.dashTimer > 0) {
-                    targetRotation = 0; // Point droit devant pendant le dash
-                } else {
-                    targetRotation = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, (this.velocity * 0.1)));
-                }
-                
+                let targetRotation = this.dashTimer > 0 ? 0 : Math.min(Math.PI / 4, Math.max(-Math.PI / 4, (this.velocity * 0.1)));
                 ctx2.rotate(targetRotation); 
                 
                 // Dessine une traînée de vitesse pendant le dash
@@ -512,17 +531,7 @@
                 ctx2.fillRect(-this.w/2, -this.h/2, this.w, this.h);
                 ctx2.restore(); ctx2.shadowBlur = 0; 
             },
-            update: function() {
-                if (this.isHolding && this.dashTimer === 0) {
-                    this.holdFrames++;
-                } else {
-                    this.holdFrames = 0;
-                }
-
-                // Réinitialise les effets des pouvoirs
-                window.isBulletTime = false;
-                let currentGravity = this.gravity;
-
+            updateNormal: function() {
                 // Mécanique de DASH
                 if (this.dashTimer > 0) {
                     this.dashTimer--;
@@ -534,15 +543,7 @@
                         this.x -= 1.5;
                         if (this.x < this.baseX) this.x = this.baseX;
                     }
-                    
-                    // APPLICATION DU POUVOIR (après ~130ms de maintien)
-                    if (this.holdFrames > 8) {
-                        // BULLET TIME (Orange) : Ralenti le monde, gravité lunaire
-                        window.isBulletTime = true;
-                        currentGravity = this.gravity * 0.4;
-                    }
-
-                    this.velocity += currentGravity; 
+                    this.velocity += this.gravity; 
                     if (this.velocity > 9) this.velocity = 9;
                 }
                 
@@ -568,14 +569,12 @@
                     ctx2.fillRect(p.x, p.top + this.gap, this.w, cvs.height - p.top - this.gap); ctx2.strokeRect(p.x, p.top + this.gap, this.w, cvs.height - p.top - this.gap);
                 }
             },
-            update: function() {
-                // Vitesse dynamique selon le Dash ou le Bullet Time
+            updateNormal: function() {
+                // Vitesse dynamique selon le Dash
                 let currentDx = this.dx;
                 if (bird.dashTimer > 0) {
                     currentDx = this.dx * 3; // Dash: Accélération x3
-                } else if (window.isBulletTime) {
-                    currentDx = this.dx * 0.4; // Bullet Time: Ralenti à 40%
-                }
+                } 
 
                 // Génération basée sur la distance parcourue
                 this.distanceAccumulator += currentDx;
@@ -606,10 +605,9 @@
                         sfxScore(); 
                         scoreDisplay.classList.remove('score-pop'); void scoreDisplay.offsetWidth; scoreDisplay.classList.add('score-pop');
                         
-                        // NOUVELLE DIFFICULTÉ : Mouvement vertical à 2, puis évolution tous les 2 points
                         if(window.currentGameScore === 2) { this.moveSpeed = 0.5; }
                         if(window.currentGameScore > 0 && window.currentGameScore % 2 === 0) {
-                            this.dx += 0.15; // Accélération plus douce car plus fréquente
+                            this.dx += 0.15; 
                             if(this.gap > 95) this.gap -= 4; 
                             if(this.spawnRate > 55) this.spawnRate -= 3; 
                             if(this.moveSpeed > 0) this.moveSpeed += 0.15;
@@ -638,20 +636,24 @@
             for(let i = 0; i < cvs.height; i += 20) { ctx2.beginPath(); ctx2.moveTo(0, i); ctx2.lineTo(cvs.width, i); ctx2.stroke(); }
             pipes.draw(); if(gameState !== 'over') bird.draw(); if(gameState === 'over') drawParticles();
         }
-
-        function update() { if(gameState === 'play') { bird.update(); pipes.update(); } }
         
         function loop(timestamp) { 
             gameLoopId = requestAnimationFrame(loop); 
             
-            if (!timestamp) timestamp = performance.now();
-            let elapsed = timestamp - lastTime;
+            if (!lastTime) lastTime = timestamp;
+            let deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
             
-            if (elapsed > fpsInterval) {
-                lastTime = timestamp - (elapsed % fpsInterval);
+            // Sécurité si l'onglet était inactif (évite de simuler trop de frames d'un coup)
+            if (deltaTime > 250) deltaTime = 250;
+            
+            accumulator += deltaTime;
+            let updated = false;
 
-                if(window.isReplay && gameState === 'play') {
-                    // Vérifie toutes les actions de la frame actuelle
+            // Boucle d'accumulation temporelle (Garantit 60 FPS peu importe l'écran)
+            while (accumulator >= timeStep) {
+                if(window.isReplay) {
+                    // Vérifie toutes les actions de la frame actuelle (même au démarrage)
                     while(window.replayFlaps.length > 0) {
                         let nextAction = window.replayFlaps[0];
                         let actionFrame = typeof nextAction === 'number' ? nextAction : nextAction.f;
@@ -659,7 +661,6 @@
                         if (frames === actionFrame) {
                             if (typeof nextAction === 'number') {
                                 handleInput('down', null, true);
-                                handleInput('up', null, true); 
                             } else {
                                 handleInput(nextAction.t === 'd' ? 'down' : 'up', null, true);
                             }
@@ -671,12 +672,89 @@
                         }
                     }
                 }
-                update(); 
-                draw(); 
-                frames++; 
+
+                if (bird.isHolding && bird.dashTimer === 0 && !window.isReplay) {
+                    bird.holdFrames++;
+                } else {
+                    bird.holdFrames = 0;
+                }
+
+                // CORRECTION : On autorise le rembobinage même en état 'over' (Game Over)
+                if (bird.holdFrames > 8 && !window.isReplay && (gameState === 'play' || gameState === 'over')) {
+                    // REWINDING TIME
+                    if (window.stateHistory.length > 0) {
+                        // Si on rembobine depuis la mort, on ressuscite et on cache l'UI !
+                        if (gameState === 'over') {
+                            gameState = 'play';
+                            uiLayer.classList.add('opacity-0', 'pointer-events-none');
+                            overUI.classList.add('hidden');
+                            particles = []; // Efface les particules d'explosion
+                        }
+
+                        let prevState = window.stateHistory.pop();
+                        
+                        bird.x = prevState.bird.x;
+                        bird.y = prevState.bird.y;
+                        bird.velocity = prevState.bird.velocity;
+                        bird.dashTimer = prevState.bird.dashTimer;
+                        
+                        pipes.items = JSON.parse(prevState.pipesItems);
+                        pipes.distanceAccumulator = prevState.pipes.distanceAccumulator;
+                        pipes.dx = prevState.pipes.dx;
+                        pipes.gap = prevState.pipes.gap;
+                        pipes.spawnRate = prevState.pipes.spawnRate;
+                        pipes.moveSpeed = prevState.pipes.moveSpeed;
+
+                        window.currentGameScore = prevState.score;
+                        scoreDisplay.innerText = window.currentGameScore;
+                        frames = prevState.frames;
+                        window.rngState = prevState.rng;
+
+                        // CORRECTION : On réinitialise la mémoire du dernier clic après un rewind 
+                        // pour éviter de déclencher un Dash par accident
+                        lastClickFrame = -999;
+
+                        // Truncate future flaps
+                        window.currentFlaps = window.currentFlaps.filter(flap => {
+                            let f = typeof flap === 'number' ? flap : flap.f;
+                            return f <= frames;
+                        });
+                    }
+                } else {
+                    // NORMAL UPDATE
+                    if (gameState === 'play') {
+                        // Sauvegarde l'état pour le rewind (limité à 150 frames = 2.5 secondes)
+                        if (!window.isReplay) {
+                            window.stateHistory.push({
+                                bird: { x: bird.x, y: bird.y, velocity: bird.velocity, dashTimer: bird.dashTimer },
+                                pipesItems: JSON.stringify(pipes.items),
+                                pipes: {
+                                    distanceAccumulator: pipes.distanceAccumulator,
+                                    dx: pipes.dx, gap: pipes.gap, spawnRate: pipes.spawnRate, moveSpeed: pipes.moveSpeed
+                                },
+                                score: window.currentGameScore,
+                                frames: frames,
+                                rng: window.rngState
+                            });
+                            if (window.stateHistory.length > 150) window.stateHistory.shift();
+                        }
+                        
+                        bird.updateNormal(); 
+                        pipes.updateNormal();
+                    }
+                    frames++; 
+                }
+
+                accumulator -= timeStep;
+                updated = true;
+            }
+            
+            if (updated) {
+                draw();
             }
         }
-        // Nouveau système d'Input avec détection de Double Clic (Dash) et Switch de Pouvoir
+
+        // Nouveau système d'Input simplifié
         function handleInput(type, e, isAutoReplay = false) {
             if (!isAutoReplay && window.isReplay) return;
             if(e && e.target && (e.target.closest('button') || e.target.tagName === 'INPUT')) return;
@@ -693,26 +771,32 @@
                     bird.isHolding = true; bird.holdFrames = 0;
                     uiLayer.classList.add('opacity-0', 'pointer-events-none');
                     setTimeout(() => { startUI.classList.add('hidden'); }, 300);
-                } else if(gameState === 'play') { 
+                } else if(gameState === 'play' || gameState === 'over') { 
                     
-                    // Détection du DOUBLE CLIC 
-                    if (frames - lastClickFrame < 15 && bird.dashTimer === 0) {
-                        bird.dashTimer = 18; 
-                        sfxDash();
-                    } else {
-                        bird.velocity = bird.jump; 
-                        sfxJump(); 
+                    // On ne déclenche le saut/dash que si on est en vie
+                    if (gameState === 'play') {
+                        // Détection du DOUBLE CLIC 
+                        let timeSinceClick = frames - lastClickFrame;
+                        // CORRECTION : On s'assure que le temps écoulé est bien positif
+                        if (timeSinceClick > 0 && timeSinceClick < 15 && bird.dashTimer === 0) {
+                            bird.dashTimer = 18; 
+                            sfxDash();
+                        } else {
+                            bird.velocity = bird.jump; 
+                            sfxJump(); 
+                        }
+
+                        lastClickFrame = frames;
+                        if (!window.isReplay && frames > 0) window.currentFlaps.push({f: frames, t: 'd'}); 
                     }
 
+                    // Mais on permet de maintenir le clic même en étant mort pour rembobiner !
                     bird.isHolding = true; 
                     bird.holdFrames = 0;
-                    lastClickFrame = frames;
-
-                    if (!window.isReplay && frames > 0) window.currentFlaps.push({f: frames, t: 'd'}); 
                 }
             } else if (type === 'up') {
+                bird.isHolding = false;
                 if(gameState === 'play') {
-                    bird.isHolding = false;
                     if (!window.isReplay && frames > 0) window.currentFlaps.push({f: frames, t: 'u'}); 
                 }
             }
@@ -740,19 +824,19 @@
         }
 
         window.resetGame = function(isReplayInit = false) {
-            bird.x = 50; bird.y = 150; bird.velocity = 0; bird.isHolding = false; bird.holdFrames = 0; bird.dashTimer = 0;
-            window.isBulletTime = false;
+            bird.x = 50; bird.y = 150; bird.velocity = 0; bird.dashTimer = 0; bird.isHolding = false; bird.holdFrames = 0;
             pipes.items = []; pipes.dx = 2.5; pipes.gap = 140; pipes.spawnRate = 90; pipes.moveSpeed = 0;
             pipes.distanceAccumulator = pipes.spawnRate * pipes.dx; // Prépare le premier tuyau
             window.currentGameScore = 0; scoreDisplay.innerText = 0; scoreDisplay.classList.remove('score-pop'); 
             frames = 0; lastClickFrame = -999; particles = []; 
+            window.stateHistory = [];
             
             overUI.classList.add('hidden'); 
             
             if(!isReplayInit) {
                 window.isReplay = false;
                 window.currentSeed = Math.floor(Math.random() * 99999999);
-                randomFunc = splitmix32(window.currentSeed); 
+                window.rngState = window.currentSeed;
                 window.currentFlaps = []; 
                 document.getElementById('replay-banner').classList.add('hidden');
                 startUI.classList.remove('hidden'); 
@@ -787,6 +871,7 @@
             document.body.style.overflow = 'hidden'; 
             if(!gameLoopId) {
                 lastTime = performance.now();
+                accumulator = 0;
                 gameLoopId = requestAnimationFrame(loop);
             }
         }
@@ -815,19 +900,18 @@
             window.replayFlaps = [...data.flaps]; 
             
             window.currentSeed = data.seed;
-            randomFunc = splitmix32(window.currentSeed);
+            window.rngState = window.currentSeed;
             
             document.getElementById('replay-pseudo').innerText = data.pseudo;
             document.getElementById('replay-banner').classList.remove('hidden');
-            uiLayer.classList.add('opacity-0', 'pointer-events-none');
-            startUI.classList.add('hidden');
 
-            gameState = 'play';
+            // On laisse le jeu démarrer naturellement via la lecture du premier clic enregistré
             gameOverlay.style.display = 'flex';
             setTimeout(() => { gameOverlay.classList.remove('opacity-0'); }, 10);
             document.body.style.overflow = 'hidden'; 
             if(!gameLoopId) {
                 lastTime = performance.now();
+                accumulator = 0;
                 gameLoopId = requestAnimationFrame(loop);
             }
         }
