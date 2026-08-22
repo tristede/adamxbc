@@ -56,32 +56,34 @@
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
         .btn-disabled { background-color: #0f0f0f; color: #444; border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); padding: 18px 24px; cursor: pointer; position: relative; overflow: hidden; }
         .icon-blob { width: 40px; height: 40px; background: #000; color: #95ff66; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-        .mobile-wrapper { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 55px 22px; position: relative; }
+        @media (max-width: 480px) {
+            .btn-active, .btn-disabled { padding: 15px 20px; }
+            .btn-inverted { padding: 21px 20px; }
+        }
+        .mobile-wrapper { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 32px 22px 40px; position: relative; }
+        @media (min-width: 480px) { .mobile-wrapper { padding-top: 55px; } }
         
-        /* --- POPUP COOKIE DÉPLAÇABLE --- */
+        /* --- POPUP COOKIE MINIMALE --- */
         #cookie-popup {
-            --drag-x: 0px;
-            --drag-y: 0px;
             position: fixed;
-            bottom: 8%;
-            left: 0;
-            right: 0;
-            margin: 0 auto;
-            transform: translate(var(--drag-x), var(--drag-y));
-            width: 90%;
-            max-width: 420px;
-            background-color: #000;
-            border: 2px solid #95ff66;
-            padding: 24px;
-            border-radius: 20px;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            max-width: 360px;
+            background-color: #0a0a0a;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 14px;
+            border-radius: 14px;
             z-index: 999;
-            box-shadow: 0 0 40px rgba(0,0,0,0.9);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
             display: none;
-            touch-action: none; 
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transition: opacity 0.25s ease;
         }
 
-        #cookie-header { cursor: grab; user-select: none; }
-        #cookie-header:active { cursor: grabbing; }
         #pp-toggle:hover { transform: scale(0.96) !important; box-shadow: inset 0 0 20px rgba(0,0,0,0.4) !important; }
         #pp-toggle:active { transform: scale(0.92) !important; }
         #pp-toggle img { transition: transform 0.5s ease-out; animation: imageFloat 14s ease-in-out infinite; transform: scale(1.1); }
@@ -95,19 +97,13 @@
     <div class="ambient-glow" style="bottom: -5%; right: -5%;"></div>
 
     <!-- POPUP COOKIE -->
-    <div id="cookie-popup" class="fade-in-up">
-        <div id="cookie-header" class="flex items-center gap-3 mb-3 pb-2 border-b border-white/5">
-            <div id="cookie-icon" class="text-[#95ff66]"><i class="fa-solid fa-cookie-bite text-3xl"></i></div>
-            <h2 id="cookie-title" class="font-display font-black text-white text-base uppercase tracking-tighter">Alerte Cookies</h2>
-            <i class="fa-solid fa-grip-lines ml-auto text-white/20"></i>
-        </div>
-        <!-- TEXTE MODIFIÉ POUR LA LOI -->
-        <p id="cookie-text" class="text-white/60 text-[10px] font-bold uppercase tracking-wider mb-5 leading-relaxed">
-            Chef, j'utilise des traceurs pour analyser les stats du site (clics, ville). Tu valides ?
+    <div id="cookie-popup">
+        <p id="cookie-text" class="text-white/60 text-[9.5px] font-bold uppercase tracking-wider flex-1 leading-relaxed">
+            Ce site utilise des cookies pour les stats.
         </p>
-        <div class="flex gap-3">
-            <button id="btn-cookie-ok" onclick="handleAccept()" class="bg-brand text-black font-black uppercase text-[11px] p-3 rounded-lg flex-1">Ok</button>
-            <button id="btn-cookie-non" onclick="handleRefuse()" class="bg-[#151515] text-white font-black uppercase text-[11px] p-3 rounded-lg flex-1 border border-white/10">Non</button>
+        <div class="flex gap-2 shrink-0">
+            <button id="btn-cookie-ok" onclick="handleAccept()" class="bg-brand text-black font-black uppercase text-[10px] px-3 py-2 rounded-lg">Ok</button>
+            <button id="btn-cookie-non" onclick="handleRefuse()" class="bg-[#151515] text-white/70 font-black uppercase text-[10px] px-3 py-2 rounded-lg border border-white/10">Non</button>
         </div>
     </div>
 
@@ -147,27 +143,59 @@
     </div>
     <div id="discord-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[900] hidden opacity-0 transition-all duration-300" onclick="closeDiscord()"></div>
 
+    <!-- TIKTOK POPUP -->
+    <div id="tiktok-popup" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[340px] bg-[#050505] border border-[#95ff66]/30 p-6 rounded-2xl z-[1000] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden opacity-0 scale-95 transition-all duration-300 flex flex-col items-center">
+        <div class="w-12 h-12 rounded-full bg-[#95ff66]/10 flex items-center justify-center mb-4 border border-[#95ff66]/20 shadow-[0_0_15px_rgba(149,255,102,0.2)]">
+            <i class="fa-brands fa-tiktok text-[#95ff66] text-xl"></i>
+        </div>
+        <h3 class="font-display font-black text-white text-lg uppercase tracking-tight mb-2">Comptes TikTok</h3>
+        <p class="text-white/60 text-xs font-bold leading-relaxed mb-6 text-center">Choisis un compte !</p>
+        <div class="w-full flex flex-col gap-3 mb-6">
+            <a href="https://www.tiktok.com/@adamxbc" target="_blank" data-track="TikTok adamxbc" class="relative flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-left group">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="w-10 h-10 rounded-lg bg-[#95ff66]/10 text-[#95ff66] flex items-center justify-center text-lg group-hover:bg-[#95ff66] group-hover:text-black transition-colors shadow-[0_0_10px_rgba(149,255,102,0.1)]">
+                        <i class="fa-brands fa-tiktok"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-black text-sm text-white uppercase">@adamxbc</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-right text-[13px] text-white/30 group-hover:text-[#95ff66] transition-colors"></i>
+            </a>
+            <a href="https://www.tiktok.com/@xdxmxbc" target="_blank" data-track="TikTok xdxmxbc" class="relative flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-left group">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="w-10 h-10 rounded-lg bg-[#95ff66]/10 text-[#95ff66] flex items-center justify-center text-lg group-hover:bg-[#95ff66] group-hover:text-black transition-colors shadow-[0_0_10px_rgba(149,255,102,0.1)]">
+                        <i class="fa-brands fa-tiktok"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-black text-sm text-white uppercase">@xdxmxbc</span>
+                        <span class="text-[9px] text-[#95ff66] uppercase tracking-wider">Compte spam</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-right text-[13px] text-white/30 group-hover:text-[#95ff66] transition-colors"></i>
+            </a>
+        </div>
+        <button onclick="closeTiktok()" class="w-full bg-[#151515] text-white hover:text-[#95ff66] font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 transition-all duration-300">Fermer</button>
+    </div>
+    <div id="tiktok-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[900] hidden opacity-0 transition-all duration-300" onclick="closeTiktok()"></div>
+
     <div class="mobile-wrapper z-10">
-        <header class="flex flex-col items-center mb-12 fade-in-up" style="animation-delay: 0.1s;">
-            <div class="relative mb-7 flex items-center justify-center z-[110]">
+        <header class="flex flex-col items-center mb-6 md:mb-10 fade-in-up" style="animation-delay: 0.1s;">
+            <div class="relative mb-4 md:mb-6 flex items-center justify-center z-[110]">
                 <!-- PHOTO DE PROFIL EASTER EGG MINI GAME -->
-                <div id="pp-toggle" onclick="window.location.href='mini_games.html'" class="w-[135px] h-[135px] blob-morph bg-[#050505] border-2 border-brand flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300 relative z-[110] group" style="animation-duration: 10s;">
+                <div id="pp-toggle" onclick="window.location.href='mini_games.html'" class="w-[104px] h-[104px] md:w-[135px] md:h-[135px] blob-morph bg-[#050505] border-2 border-brand flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300 relative z-[110] group" style="animation-duration: 10s;">
                     <img src="pp.jpg" alt="PP" class="w-full h-full object-cover select-none pointer-events-none group-hover:scale-110 transition-transform duration-500">
                 </div>
                 <div id="live-badge" class="hidden absolute -bottom-1 -right-2 bg-[#95ff66] text-black font-black text-[9px] px-1.7 py-0.6 rounded z-[110]">LIVE</div>
             </div>
-            
-            <h1 class="text-[3.4rem] md:text-[4.1rem] font-display font-black tracking-tighter uppercase leading-none glow-title py-2.5 text-center">ADAMXBC</h1>
-            
+
+            <h1 class="text-[2.6rem] md:text-[4.1rem] font-display font-black tracking-tighter uppercase leading-none glow-title py-1.5 text-center">ADAMXBC</h1>
+
             <!-- ROW 3 ICÔNES SOUS LE PSEUDO -->
             <div class="flex items-center justify-center gap-6 mt-1 mb-0 relative z-[120]">
                 <!-- MAL -->
                 <a href="https://myanimelist.net/profile/adamxbc" target="_blank" data-track="MAL" class="w-8 h-8 rounded-full bg-[#95ff66]/10 border border-[#95ff66]/20 flex items-center justify-center hover:bg-[#95ff66]/20 hover:border-[#95ff66]/40 transition-all hover:-translate-y-1 shadow-[0_0_10px_rgba(149,255,102,0.05)]">
                     <span class="font-black text-[8px] text-[#4274EA] leading-none">MAL</span>
-                </a>
-                <!-- SPOTIFY -->
-                <a href="https://open.spotify.com/user/31jf2ozzv3de76gfkigykh7lnaii?si=QtnAPaLcTTWWmcWujf8rug" target="_blank" data-track="Spotify" class="w-8 h-8 rounded-full bg-[#95ff66]/10 border border-[#95ff66]/20 flex items-center justify-center hover:bg-[#95ff66]/20 hover:border-[#95ff66]/40 transition-all hover:-translate-y-1 shadow-[0_0_10px_rgba(149,255,102,0.05)]">
-                    <i class="fa-brands fa-spotify text-[14px] text-[#1DB954]"></i>
                 </a>
                 <!-- LETTERBOXD -->
                 <a href="https://letterboxd.com/adamxbc/" target="_blank" data-track="Letterboxd" class="w-8 h-8 rounded-full bg-[#95ff66]/10 border border-[#95ff66]/20 flex items-center justify-center hover:bg-[#95ff66]/20 hover:border-[#95ff66]/40 transition-all hover:-translate-y-1 shadow-[0_0_10px_rgba(149,255,102,0.05)]">
@@ -176,16 +204,16 @@
             </div>
         </header>
 
-        <main class="flex flex-col gap-5 w-full">
+        <main class="flex flex-col gap-3 md:gap-5 w-full">
             <a href="https://instagram.com/adamxbc" target="_blank" data-track="Instagram" class="btn-active anim-float shine-1 flex items-center justify-between fade-in-up group" style="animation-delay: 0.2s;">
                 <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 13s;"><i class="fa-brands fa-instagram"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">INSTAGRAM</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </a>
             <a href="https://twitch.tv/adamxbc" target="_blank" data-track="Twitch" class="btn-active anim-float shine-2 flex items-center justify-between fade-in-up group" style="animation-delay: 0.3s;">
                 <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 15s;"><i class="fa-brands fa-twitch"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TWITCH</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </a>
-            <a href="https://www.tiktok.com/@adamxbc" target="_blank" data-track="TikTok" class="btn-active anim-float shine-3 flex items-center justify-between fade-in-up group" style="animation-delay: 0.4s;">
+            <div onclick="openTiktok()" data-track="Menu TikTok" class="btn-active anim-float shine-3 flex items-center justify-between fade-in-up group cursor-pointer" style="animation-delay: 0.4s;">
                 <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 12s;"><i class="fa-brands fa-tiktok"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TIKTOK</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
-            </a>
+            </div>
             
             <div onclick="openDiscord()" data-track="Menu Discord" class="btn-inverted anim-float shine-inverted flex items-center fade-in-up group mt-2" style="animation-delay: 0.45s;">
                 <div class="flex items-center gap-6 text-left w-full">
@@ -291,35 +319,24 @@
         }
 
         // --- ACTIONS DES BOUTONS DU BANDEAU ---
-        window.handleAccept = function() { 
+        window.handleAccept = function() {
             acceptAudio.play().catch(e => console.log("Audio bloqué ou non trouvé"));
-            localStorage.setItem('cookies_v12', 'true'); 
-            document.getElementById('cookie-popup').style.display = 'none'; 
+            localStorage.setItem('cookies_v12', 'true');
+            closeCookiePopup();
             initAnalytics();
             enableTracking();
             window.trackCustomEvent('AcceptCookies');
         }
 
-        window.handleRefuse = function() { 
-            localStorage.setItem('cookies_v12', 'false'); 
-            document.getElementById('cookie-title').style.display = 'none';
-            document.getElementById('cookie-icon').style.display = 'none';
-            document.getElementById('cookie-text').innerText = "Ok, pas de cookies c'est compris. Mais viens me follow sur twitch alors!!";
-            
-            const btnOk = document.getElementById('btn-cookie-ok');
-            const btnNon = document.getElementById('btn-cookie-non');
-            
-            btnOk.innerHTML = '<i class="fa-brands fa-twitch text-sm"></i> Follow';
-            btnOk.className = 'bg-brand text-black font-black uppercase text-[11px] p-3 rounded-lg flex-1 flex items-center justify-center gap-2 transition-transform hover:scale-95';
-            btnOk.onclick = function() {
-                window.open('https://twitch.tv/adamxbc', '_blank');
-                closeCookiePopup();
-            };
-            btnNon.onclick = closeCookiePopup;
+        window.handleRefuse = function() {
+            localStorage.setItem('cookies_v12', 'false');
+            closeCookiePopup();
         }
 
         window.closeCookiePopup = function() {
-            document.getElementById('cookie-popup').style.display = 'none';
+            const popup = document.getElementById('cookie-popup');
+            popup.style.opacity = '0';
+            setTimeout(() => { popup.style.display = 'none'; }, 250);
         }
     </script>
 
@@ -373,34 +390,28 @@
             setTimeout(() => { dPopup.classList.add('hidden'); dOverlay.classList.add('hidden'); }, 300);
         }
 
+        const tPopup = document.getElementById('tiktok-popup');
+        const tOverlay = document.getElementById('tiktok-overlay');
+        function openTiktok() {
+            tPopup.classList.remove('hidden');
+            tOverlay.classList.remove('hidden');
+            setTimeout(() => { tPopup.classList.remove('opacity-0', 'scale-95'); tOverlay.classList.remove('opacity-0'); }, 10);
+        }
+        function closeTiktok() {
+            tPopup.classList.add('opacity-0', 'scale-95');
+            tOverlay.classList.add('opacity-0');
+            setTimeout(() => { tPopup.classList.add('hidden'); tOverlay.classList.add('hidden'); }, 300);
+        }
+
         const cookiePopup = document.getElementById('cookie-popup');
-        const cookieHeader = document.getElementById('cookie-header');
-        let isDragging = false, currentX = 0, currentY = 0, initialX, initialY;
-
-        function dragStart(e) {
-            if (e.target.closest('button') || e.target.closest('a')) return;
-            const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
-            initialX = clientX - currentX; initialY = clientY - currentY; isDragging = true;
-        }
-
-        function drag(e) {
-            if (!isDragging) return;
-            if (e.cancelable) e.preventDefault();
-            const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
-            currentX = clientX - initialX; currentY = clientY - initialY;
-            cookiePopup.style.setProperty('--drag-x', currentX + 'px');
-            cookiePopup.style.setProperty('--drag-y', currentY + 'px');
-        }
-
-        function dragEnd() { isDragging = false; }
-
-        cookieHeader.addEventListener('mousedown', dragStart); document.addEventListener('mousemove', drag); document.addEventListener('mouseup', dragEnd);
-        cookieHeader.addEventListener('touchstart', dragStart, { passive: false }); document.addEventListener('touchmove', drag, { passive: false }); document.addEventListener('touchend', dragEnd);
 
         window.addEventListener('load', () => {
-            if (!localStorage.getItem('cookies_v12')) { setTimeout(() => { cookiePopup.style.display = 'block'; }, 1500); }
+            if (!localStorage.getItem('cookies_v12')) {
+                setTimeout(() => {
+                    cookiePopup.style.display = 'flex';
+                    requestAnimationFrame(() => { cookiePopup.style.opacity = '1'; });
+                }, 1500);
+            }
         });
 
         const c = document.getElementById('ytb-matrix');
