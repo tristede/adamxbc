@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <style>:root { --accent: #6200ff; --accent-rgb: 98, 0, 255; --accent-hover: #4e00cc; --accent-shine-rgb: 203, 171, 255; }</style>
+    <script>const accentHex = () => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(); const accentRGB = () => getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADAMXBC | Stats</title>
      <!-- Favicon Y2K Étoile Verte -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%2395ff66' d='M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z'/></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%236200ff' d='M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z'/></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,7 +17,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { brand: '#95ff66', dark: '#030005', card: '#0a0a0a' },
+                    colors: { brand: 'rgba(var(--accent-rgb), <alpha-value>)', dark: '#030005', card: '#0a0a0a' },
                     fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'] }
                 }
             }
@@ -24,18 +26,18 @@
 
     <style>
         body { background-color: #030005; color: white; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(149, 255, 102, 0.1); }
-        .tab-active { background-color: #95ff66; color: black; }
+        .glass { background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(var(--accent-rgb), 0.1); }
+        .tab-active { background-color: var(--accent); color: #fff; }
         .stat-card { transition: transform 0.3s ease; }
-        .stat-card:hover { transform: translateY(-5px); border-color: rgba(149, 255, 102, 0.4); }
+        .stat-card:hover { transform: translateY(-5px); border-color: rgba(var(--accent-rgb), 0.4); }
         /* Style "Temps d'écran" : coins arrondis sur les barres */
         canvas { max-height: 350px; }
         
         /* Custom Scrollbar pour la liste des boutons */
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(149, 255, 102, 0.3); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(149, 255, 102, 0.6); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb), 0.3); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(var(--accent-rgb), 0.6); }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -239,7 +241,7 @@
                     datasets: [{
                         label: 'Visites / Actions',
                         data: Object.values(groups),
-                        backgroundColor: '#95ff66',
+                        backgroundColor: accentHex(),
                         borderRadius: 10,
                         barThickness: currentPeriod === 'all' ? 12 : 25
                     }]
@@ -322,7 +324,7 @@
                     labels: ['Mobile', 'Desktop'],
                     datasets: [{
                         data: [mobile, desktop],
-                        backgroundColor: ['#95ff66', '#151515'],
+                        backgroundColor: [accentHex(), '#151515'],
                         borderColor: '#030005',
                         borderWidth: 6,
                         hoverOffset: 4

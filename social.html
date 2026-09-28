@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <style>:root { --accent: #6200ff; --accent-rgb: 98, 0, 255; --accent-hover: #4e00cc; --accent-shine-rgb: 203, 171, 255; }</style>
+    <script>const accentHex = () => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(); const accentRGB = () => getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADAMXBC | Widget Réseaux Sociaux</title>
@@ -19,7 +21,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { brand: '#95ff66' },
+                    colors: { brand: 'rgba(var(--accent-rgb), <alpha-value>)' },
                     fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'] }
                 }
             }
@@ -45,7 +47,7 @@
             position: absolute;
             inset: 0;
             background-color: #030005;
-            background-image: radial-gradient(circle, rgba(149,255,102,0.05) 1px, transparent 1px);
+            background-image: radial-gradient(circle, rgba(var(--accent-rgb),0.05) 1px, transparent 1px);
             background-size: 30px 30px;
             z-index: -2;
             display: none; /* Change en 'block' si tu veux voir le fond dans ton navigateur */
@@ -55,7 +57,7 @@
         .glass {
             background: rgba(5, 5, 5, 0.75);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(149, 255, 102, 0.15);
+            border: 1px solid rgba(var(--accent-rgb), 0.15);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
@@ -76,7 +78,7 @@
     <div class="preview-bg" id="preview-bg"></div>
     
     <!-- Bouton Dev (à supprimer si tu redimensionnes la source OBS pile sur le widget) -->
-    <button onclick="toggleBackground()" class="absolute top-4 left-4 z-50 bg-brand text-black px-3 py-1 text-xs font-black uppercase rounded hover:bg-white transition-colors">
+    <button onclick="toggleBackground()" class="absolute top-4 left-4 z-50 bg-brand text-white px-3 py-1 text-xs font-black uppercase rounded hover:bg-white hover:text-black transition-colors">
         Afficher/Cacher Fond
     </button>
 
@@ -85,7 +87,7 @@
     <!-- ========================================== -->
     <div class="absolute bottom-12 right-12 glass p-2 rounded-2xl flex items-center gap-2 anim-float">
         <!-- Étiquette Fixe -->
-        <div class="bg-brand text-black font-black uppercase text-[10px] px-3 py-2 rounded-xl tracking-widest">
+        <div class="bg-brand text-white font-black uppercase text-[10px] px-3 py-2 rounded-xl tracking-widest">
             Réseaux
         </div>
         

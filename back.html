@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <style>:root { --accent: #6200ff; --accent-rgb: 98, 0, 255; --accent-hover: #4e00cc; --accent-shine-rgb: 203, 171, 255; }</style>
+    <script>const accentHex = () => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(); const accentRGB = () => getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADAMXBC | Background Animé</title>
@@ -30,7 +32,7 @@
             position: absolute;
             border-radius: 50%;
             filter: blur(200px); /* Flou extrême pour se fondre dans le noir absolu */
-            background-color: #95ff66;
+            background-color: var(--accent);
         }
 
         /* Lueur principale : Concentrée en bas à droite, très discrète */
@@ -71,8 +73,8 @@
             inset: 0;
             z-index: 2; /* Par-dessus les lueurs */
             background-image: 
-                linear-gradient(rgba(149, 255, 102, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(149, 255, 102, 0.03) 1px, transparent 1px);
+                linear-gradient(rgba(var(--accent-rgb), 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(var(--accent-rgb), 0.03) 1px, transparent 1px);
             background-size: 40px 40px; /* Taille des carreaux */
             pointer-events: none;
         }

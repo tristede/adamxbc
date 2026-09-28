@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <style>:root { --accent: #6200ff; --accent-rgb: 98, 0, 255; --accent-hover: #4e00cc; --accent-shine-rgb: 203, 171, 255; }</style>
+    <script>const accentHex = () => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(); const accentRGB = () => getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADAMXBC | Widget Caméra (4:3 Néon Fixé)</title>
@@ -16,7 +18,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { brand: '#95ff66' }
+                    colors: { brand: 'rgba(var(--accent-rgb), <alpha-value>)' }
                 }
             }
         }
@@ -49,7 +51,7 @@
         .cam-glow {
             position: absolute;
             inset: -120px;
-            background: radial-gradient(circle, rgba(149,255,102,0.2) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(var(--accent-rgb),0.2) 0%, transparent 70%);
             z-index: -1;
             pointer-events: none;
         }
@@ -59,15 +61,15 @@
             position: absolute;
             inset: 0;
             box-sizing: border-box;
-            border: 20px solid #95ff66; /* Épaisseur parfaite */
+            border: 20px solid var(--accent); /* Épaisseur parfaite */
             border-radius: 40px;
             z-index: 10;
             pointer-events: none;
             /* La lueur baveuse qui ne sera jamais coupée */
             box-shadow: 
-                0 0 40px rgba(149, 255, 102, 0.8), 
-                0 0 90px rgba(149, 255, 102, 0.4), 
-                inset 0 0 30px rgba(149, 255, 102, 0.6);
+                0 0 40px rgba(var(--accent-rgb), 0.8), 
+                0 0 90px rgba(var(--accent-rgb), 0.4), 
+                inset 0 0 30px rgba(var(--accent-rgb), 0.6);
         }
 
         /* Le coeur blanc incandescent du Néon */
@@ -168,7 +170,7 @@
     <div class="preview-bg" id="preview-bg"></div>
     
     <!-- Bouton Dev -->
-    <button onclick="toggleBackground()" class="absolute top-4 left-4 z-50 bg-brand text-black px-3 py-1 text-xs font-black uppercase rounded hover:bg-white transition-colors">
+    <button onclick="toggleBackground()" class="absolute top-4 left-4 z-50 bg-brand text-white px-3 py-1 text-xs font-black uppercase rounded hover:bg-white hover:text-black transition-colors">
         Afficher Fausse Cam
     </button>
 

@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <style>:root { --accent: #6200ff; --accent-rgb: 98, 0, 255; --accent-hover: #4e00cc; --accent-shine-rgb: 203, 171, 255; --btn-radius: 10px; }</style>
+    <script>const accentHex = () => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(); const accentRGB = () => getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADAMXBC | Linktree</title>
     
     <!-- Favicon Y2K Étoile Verte -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%2395ff66' d='M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z'/></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%236200ff' d='M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z'/></svg>">
 
     <!-- Polices -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,7 +24,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { brand: '#95ff66' },
+                    colors: { brand: 'rgba(var(--accent-rgb), <alpha-value>)' },
                     fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'], pixel: ['"Press Start 2P"', 'cursive'] },
                     animation: { 'spin-slow': 'spin 60s linear infinite', 'counter-spin': 'counter-spin 60s linear infinite', 'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
                     keyframes: { 'counter-spin': { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(-360deg)' } } }
@@ -33,29 +35,34 @@
     
     <style>
         body { background-color: #030005; margin: 0; color: #ffffff; overflow-x: hidden; font-family: 'Inter', sans-serif; }
-        .ambient-glow { position: fixed; width: 55vw; height: 55vw; background: radial-gradient(circle, rgba(149,255,102,0.03) 0%, rgba(0,0,0,0) 70%); z-index: 0; pointer-events: none; }
+        .ambient-glow { position: fixed; width: 70vw; height: 70vw; max-width: 520px; max-height: 520px; background: radial-gradient(circle, rgba(var(--accent-rgb), 0.18) 0%, rgba(0,0,0,0) 65%); filter: blur(10px); z-index: 0; pointer-events: none; animation: orbit1 22s ease-in-out infinite; }
+        .ambient-glow + .ambient-glow { background: radial-gradient(circle, rgba(0, 140, 255, 0.11) 0%, rgba(0,0,0,0) 65%); animation: orbit2 26s ease-in-out infinite; }
+        .bg-orb { position: fixed; top: 38%; left: 30%; width: 45vw; height: 45vw; max-width: 340px; max-height: 340px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 60, 200, 0.08) 0%, rgba(0,0,0,0) 65%); pointer-events: none; z-index: 0; animation: orbit3 30s ease-in-out infinite; }
+        @keyframes orbit1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(18vw, 25vh); } }
+        @keyframes orbit2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-20vw, -30vh); } }
+        @keyframes orbit3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-15vw, 10vh) scale(1.2); } }
         .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translate(var(--drag-x, 0px), calc(var(--drag-y, 0px) + 17px)); } to { opacity: 1; transform: translate(var(--drag-x, 0px), var(--drag-y, 0px)); } }
         .blob-morph { border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%; animation: morph 12s ease-in-out infinite; }
         @keyframes morph { 0% { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; } 33% { border-radius: 65% 35% 55% 45% / 55% 65% 35% 45%; } 66% { border-radius: 40% 60% 30% 70% / 60% 40% 70% 30%; } 100% { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; } }
-        .glow-title { background: linear-gradient(110deg, #ffffff 0%, #ffffff 45%, #b0b5b9 45%, #b0b5b9 48%, #ffffff 48%, #ffffff 50%, #b0b5b9 50%, #b0b5b9 52%, #ffffff 52%, #ffffff 100%); background-size: 400% auto; color: transparent; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px rgba(149, 255, 102, 0.4)); animation: textShine 5s steps(25) infinite; }
+        .glow-title { background: linear-gradient(110deg, #ffffff 0%, #ffffff 45%, #b0b5b9 45%, #b0b5b9 48%, #ffffff 48%, #ffffff 50%, #b0b5b9 50%, #b0b5b9 52%, #ffffff 52%, #ffffff 100%); background-size: 400% auto; color: transparent; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px rgba(var(--accent-rgb), 0.4)); animation: textShine 5s steps(25) infinite; }
         @keyframes textShine { 0% { background-position: 100% center; } 40% { background-position: 0% center; } 100% { background-position: 0% center; } }
-        .btn-active { background-color: #95ff66; color: #000; border-radius: 18px; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 4.4px 11px rgba(149, 255, 102, 0.1); padding: 18px 24px; position: relative; overflow: hidden; }
-        .btn-active:hover { transform: translateY(-2.2px) scale(1.02) !important; box-shadow: 0 0 33px rgba(149, 255, 102, 0.4); background-color: #b3ff8c; }
-        .btn-active::after { content: ''; position: absolute; top: 0; left: -100px; width: 50px; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(220, 255, 180, 0.9) 0%, rgba(220, 255, 180, 0.9) 40%, transparent 40%, transparent 60%, rgba(220, 255, 180, 0.5) 60%, rgba(220, 255, 180, 0.5) 80%, transparent 80%); transform: skewX(-25deg); pointer-events: none; z-index: 10; }
+        .btn-active { background-color: var(--accent); color: #fff; border-radius: var(--btn-radius); transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 4.4px 11px rgba(var(--accent-rgb), 0.1); padding: 18px 24px; position: relative; overflow: hidden; }
+        .btn-active:hover { transform: translateY(-2.2px) scale(1.02) !important; box-shadow: 0 0 33px rgba(var(--accent-rgb), 0.4); background-color: var(--accent-hover); }
+        .btn-active::after { content: ''; position: absolute; top: 0; left: -100px; width: 50px; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(var(--accent-shine-rgb), 0.9) 0%, rgba(var(--accent-shine-rgb), 0.9) 40%, transparent 40%, transparent 60%, rgba(var(--accent-shine-rgb), 0.5) 60%, rgba(var(--accent-shine-rgb), 0.5) 80%, transparent 80%); transform: skewX(-25deg); pointer-events: none; z-index: 10; }
         .shine-1::after { animation: btnShine1 6.5s steps(20) infinite; }
         .shine-2::after { animation: btnShine2 8.2s steps(20) infinite 1.5s; }
         .shine-3::after { animation: btnShine3 7.4s steps(20) infinite 0.8s; }
         @keyframes btnShine1 { 0% { left: -100px; } 25% { left: 120%; } 100% { left: 120%; } }
-        .btn-inverted { background-color: #050505; color: #95ff66; border: 2px solid #95ff66; border-radius: 18px; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 4.4px 11px rgba(149, 255, 102, 0.1), inset 0 0 15px rgba(149, 255, 102, 0.05); padding: 27px 24px; position: relative; overflow: hidden; cursor: pointer; }
-        .btn-inverted:hover { transform: translateY(-2.2px) scale(1.02) !important; box-shadow: 0 0 33px rgba(149, 255, 102, 0.4), inset 0 0 20px rgba(149, 255, 102, 0.15); background-color: #0a0a0a; }
-        .btn-inverted::after { content: ''; position: absolute; top: 0; left: -100px; width: 50px; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(149, 255, 102, 0.8) 0%, rgba(149, 255, 102, 0.8) 40%, transparent 40%, transparent 60%, rgba(149, 255, 102, 0.4) 60%, rgba(149, 255, 102, 0.4) 80%, transparent 80%); transform: skewX(-25deg); pointer-events: none; z-index: 10; }
+        .btn-inverted { background-color: #050505; color: var(--accent); border: 2px solid var(--accent); border-radius: var(--btn-radius); transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 4.4px 11px rgba(var(--accent-rgb), 0.1), inset 0 0 15px rgba(var(--accent-rgb), 0.05); padding: 27px 24px; position: relative; overflow: hidden; cursor: pointer; }
+        .btn-inverted:hover { transform: translateY(-2.2px) scale(1.02) !important; box-shadow: 0 0 33px rgba(var(--accent-rgb), 0.4), inset 0 0 20px rgba(var(--accent-rgb), 0.15); background-color: #0a0a0a; }
+        .btn-inverted::after { content: ''; position: absolute; top: 0; left: -100px; width: 50px; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(var(--accent-rgb), 0.8) 0%, rgba(var(--accent-rgb), 0.8) 40%, transparent 40%, transparent 60%, rgba(var(--accent-rgb), 0.4) 60%, rgba(var(--accent-rgb), 0.4) 80%, transparent 80%); transform: skewX(-25deg); pointer-events: none; z-index: 10; }
         .shine-inverted::after { animation: btnShine1 7.5s steps(20) infinite 2s; }
-        .icon-blob-inverted { width: 44px; height: 44px; background: #95ff66; color: #000; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+        .icon-blob-inverted { width: 44px; height: 44px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
         .anim-float { animation: float 6s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
-        .btn-disabled { background-color: #0f0f0f; color: #444; border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); padding: 18px 24px; cursor: pointer; position: relative; overflow: hidden; }
-        .icon-blob { width: 40px; height: 40px; background: #000; color: #95ff66; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .btn-disabled { background-color: #0f0f0f; color: #444; border-radius: var(--btn-radius); border: 1px solid rgba(255,255,255,0.05); padding: 18px 24px; cursor: pointer; position: relative; overflow: hidden; }
+        .icon-blob { width: 40px; height: 40px; background: #fff; color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
         @media (max-width: 480px) {
             .btn-active, .btn-disabled { padding: 15px 20px; }
             .btn-inverted { padding: 21px 20px; }
@@ -88,13 +95,14 @@
         #pp-toggle:active { transform: scale(0.92) !important; }
         #pp-toggle img { transition: transform 0.5s ease-out; animation: imageFloat 14s ease-in-out infinite; transform: scale(1.1); }
         @keyframes imageFloat { 0%, 100% { transform: scale(1.1) translate(0, 0); } 25% { transform: scale(1.15) translate(5px, -5px); } 50% { transform: scale(1.1) translate(-3px, 5px); } 75% { transform: scale(1.12) translate(-5px, -3px); } }
-        .divider { width: 100%; height: 1.5px; background: rgba(255, 255, 255, 0.25); margin: 25px 0; position: relative; box-shadow: 0 0 12px rgba(149, 255, 102, 0.15); }
+        .divider { width: 100%; height: 1.5px; background: rgba(255, 255, 255, 0.25); margin: 25px 0; position: relative; box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.15); }
     </style>
 </head>
 <body class="antialiased relative">
 
     <div class="ambient-glow" style="top: -5%; left: -5%;"></div>
     <div class="ambient-glow" style="bottom: -5%; right: -5%;"></div>
+    <div class="bg-orb"></div>
 
     <!-- POPUP COOKIE -->
     <div id="cookie-popup">
@@ -102,80 +110,80 @@
             Ce site utilise des cookies pour les stats.
         </p>
         <div class="flex gap-2 shrink-0">
-            <button id="btn-cookie-ok" onclick="handleAccept()" class="bg-brand text-black font-black uppercase text-[10px] px-3 py-2 rounded-lg">Ok</button>
+            <button id="btn-cookie-ok" onclick="handleAccept()" class="bg-brand text-white font-black uppercase text-[10px] px-3 py-2 rounded-lg">Ok</button>
             <button id="btn-cookie-non" onclick="handleRefuse()" class="bg-[#151515] text-white/70 font-black uppercase text-[10px] px-3 py-2 rounded-lg border border-white/10">Non</button>
         </div>
     </div>
 
     <!-- NOTICE POPUP -->
-    <div id="notice-popup" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[340px] bg-[#050505] border border-[#95ff66]/30 p-6 rounded-2xl z-[2000] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden opacity-0 scale-95 transition-all duration-300 flex flex-col items-center text-center">
-        <div class="w-12 h-12 rounded-full bg-[#95ff66]/10 flex items-center justify-center mb-4 border border-[#95ff66]/20 shadow-[0_0_15px_rgba(149,255,102,0.2)]">
-            <i id="notice-icon" class="fa-solid fa-person-digging text-[#95ff66] text-xl"></i>
+    <div id="notice-popup" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[340px] bg-[#050505] border border-brand/30 p-6 rounded-2xl z-[2000] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden opacity-0 scale-95 transition-all duration-300 flex flex-col items-center text-center">
+        <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center mb-4 border border-brand/20 shadow-[0_0_15px_rgba(var(--accent-rgb),0.2)]">
+            <i id="notice-icon" class="fa-solid fa-person-digging text-brand text-xl"></i>
         </div>
         <h3 id="notice-title" class="font-display font-black text-white text-lg uppercase tracking-tight mb-2">En chantier !</h3>
         <p id="notice-text" class="text-white/60 text-xs font-bold leading-relaxed mb-6">Texte par défaut.</p>
-        <button onclick="closeNotice()" class="w-full bg-[#151515] text-white hover:text-[#95ff66] font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 hover:border-[#95ff66]/30 transition-all duration-300">J'ai capté</button>
+        <button onclick="closeNotice()" class="w-full bg-[#151515] text-white hover:text-brand font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 hover:border-brand/30 transition-all duration-300">J'ai capté</button>
     </div>
     <div id="notice-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1500] hidden opacity-0 transition-all duration-300" onclick="closeNotice()"></div>
 
     <!-- DISCORD POPUP -->
-    <div id="discord-popup" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[340px] bg-[#050505] border border-[#95ff66]/30 p-6 rounded-2xl z-[1000] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden opacity-0 scale-95 transition-all duration-300 flex flex-col items-center">
-        <div class="w-12 h-12 rounded-full bg-[#95ff66]/10 flex items-center justify-center mb-4 border border-[#95ff66]/20 shadow-[0_0_15px_rgba(149,255,102,0.2)]">
-            <i class="fa-brands fa-discord text-[#95ff66] text-xl"></i>
+    <div id="discord-popup" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[340px] bg-[#050505] border border-brand/30 p-6 rounded-2xl z-[1000] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden opacity-0 scale-95 transition-all duration-300 flex flex-col items-center">
+        <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center mb-4 border border-brand/20 shadow-[0_0_15px_rgba(var(--accent-rgb),0.2)]">
+            <i class="fa-brands fa-discord text-brand text-xl"></i>
         </div>
         <h3 class="font-display font-black text-white text-lg uppercase tracking-tight mb-2">Serveurs Discord</h3>
         <p class="text-white/60 text-xs font-bold leading-relaxed mb-6 text-center">Rejoins la communauté !</p>
         <div class="w-full flex flex-col gap-3 mb-6">
             <a href="https://discord.gg/E5vhTmp6Kk" target="_blank" data-track="Discord NGC STARS" class="relative flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-left group">
                 <div class="flex items-center gap-3 w-full">
-                    <div class="w-10 h-10 rounded-lg bg-[#95ff66]/10 text-[#95ff66] flex items-center justify-center text-lg group-hover:bg-[#95ff66] group-hover:text-black transition-colors shadow-[0_0_10px_rgba(149,255,102,0.1)]">
+                    <div class="w-10 h-10 rounded-lg bg-brand/10 text-brand flex items-center justify-center text-lg group-hover:bg-brand group-hover:text-white transition-colors shadow-[0_0_10px_rgba(var(--accent-rgb),0.1)]">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5"><path fill="currentColor" d="M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z"/></svg>
                     </div>
                     <div class="flex flex-col">
                         <span class="font-black text-sm text-white uppercase">NGC STARS</span>
-                        <span class="text-[9px] text-[#95ff66] uppercase tracking-wider">Mon serveur discord</span>
+                        <span class="text-[9px] text-brand uppercase tracking-wider">Mon serveur discord</span>
                     </div>
                 </div>
-                <i class="fa-solid fa-arrow-right text-[13px] text-white/30 group-hover:text-[#95ff66] transition-colors"></i>
+                <i class="fa-solid fa-arrow-right text-[13px] text-white/30 group-hover:text-brand transition-colors"></i>
             </a>
         </div>
-        <button onclick="closeDiscord()" class="w-full bg-[#151515] text-white hover:text-[#95ff66] font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 transition-all duration-300">Fermer</button>
+        <button onclick="closeDiscord()" class="w-full bg-[#151515] text-white hover:text-brand font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 transition-all duration-300">Fermer</button>
     </div>
     <div id="discord-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[900] hidden opacity-0 transition-all duration-300" onclick="closeDiscord()"></div>
 
     <!-- TIKTOK POPUP -->
-    <div id="tiktok-popup" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[340px] bg-[#050505] border border-[#95ff66]/30 p-6 rounded-2xl z-[1000] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden opacity-0 scale-95 transition-all duration-300 flex flex-col items-center">
-        <div class="w-12 h-12 rounded-full bg-[#95ff66]/10 flex items-center justify-center mb-4 border border-[#95ff66]/20 shadow-[0_0_15px_rgba(149,255,102,0.2)]">
-            <i class="fa-brands fa-tiktok text-[#95ff66] text-xl"></i>
+    <div id="tiktok-popup" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[340px] bg-[#050505] border border-brand/30 p-6 rounded-2xl z-[1000] shadow-[0_0_40px_rgba(0,0,0,0.9)] hidden opacity-0 scale-95 transition-all duration-300 flex flex-col items-center">
+        <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center mb-4 border border-brand/20 shadow-[0_0_15px_rgba(var(--accent-rgb),0.2)]">
+            <i class="fa-brands fa-tiktok text-brand text-xl"></i>
         </div>
         <h3 class="font-display font-black text-white text-lg uppercase tracking-tight mb-2">Comptes TikTok</h3>
         <p class="text-white/60 text-xs font-bold leading-relaxed mb-6 text-center">Choisis un compte !</p>
         <div class="w-full flex flex-col gap-3 mb-6">
             <a href="https://www.tiktok.com/@adamxbc" target="_blank" data-track="TikTok adamxbc" class="relative flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-left group">
                 <div class="flex items-center gap-3 w-full">
-                    <div class="w-10 h-10 rounded-lg bg-[#95ff66]/10 text-[#95ff66] flex items-center justify-center text-lg group-hover:bg-[#95ff66] group-hover:text-black transition-colors shadow-[0_0_10px_rgba(149,255,102,0.1)]">
+                    <div class="w-10 h-10 rounded-lg bg-brand/10 text-brand flex items-center justify-center text-lg group-hover:bg-brand group-hover:text-white transition-colors shadow-[0_0_10px_rgba(var(--accent-rgb),0.1)]">
                         <i class="fa-brands fa-tiktok"></i>
                     </div>
                     <div class="flex flex-col">
                         <span class="font-black text-sm text-white uppercase">@adamxbc</span>
                     </div>
                 </div>
-                <i class="fa-solid fa-arrow-right text-[13px] text-white/30 group-hover:text-[#95ff66] transition-colors"></i>
+                <i class="fa-solid fa-arrow-right text-[13px] text-white/30 group-hover:text-brand transition-colors"></i>
             </a>
             <a href="https://www.tiktok.com/@xdxmxbc" target="_blank" data-track="TikTok xdxmxbc" class="relative flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-left group">
                 <div class="flex items-center gap-3 w-full">
-                    <div class="w-10 h-10 rounded-lg bg-[#95ff66]/10 text-[#95ff66] flex items-center justify-center text-lg group-hover:bg-[#95ff66] group-hover:text-black transition-colors shadow-[0_0_10px_rgba(149,255,102,0.1)]">
+                    <div class="w-10 h-10 rounded-lg bg-brand/10 text-brand flex items-center justify-center text-lg group-hover:bg-brand group-hover:text-white transition-colors shadow-[0_0_10px_rgba(var(--accent-rgb),0.1)]">
                         <i class="fa-brands fa-tiktok"></i>
                     </div>
                     <div class="flex flex-col">
                         <span class="font-black text-sm text-white uppercase">@xdxmxbc</span>
-                        <span class="text-[9px] text-[#95ff66] uppercase tracking-wider">Compte spam</span>
+                        <span class="text-[9px] text-brand uppercase tracking-wider">Compte spam</span>
                     </div>
                 </div>
-                <i class="fa-solid fa-arrow-right text-[13px] text-white/30 group-hover:text-[#95ff66] transition-colors"></i>
+                <i class="fa-solid fa-arrow-right text-[13px] text-white/30 group-hover:text-brand transition-colors"></i>
             </a>
         </div>
-        <button onclick="closeTiktok()" class="w-full bg-[#151515] text-white hover:text-[#95ff66] font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 transition-all duration-300">Fermer</button>
+        <button onclick="closeTiktok()" class="w-full bg-[#151515] text-white hover:text-brand font-black uppercase text-[11px] p-3 rounded-lg border border-white/10 transition-all duration-300">Fermer</button>
     </div>
     <div id="tiktok-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[900] hidden opacity-0 transition-all duration-300" onclick="closeTiktok()"></div>
 
@@ -186,7 +194,7 @@
                 <div id="pp-toggle" onclick="window.location.href='mini_games.html'" class="w-[104px] h-[104px] md:w-[135px] md:h-[135px] blob-morph bg-[#050505] border-2 border-brand flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300 relative z-[110] group" style="animation-duration: 10s;">
                     <img src="pp.jpg" alt="PP" class="w-full h-full object-cover select-none pointer-events-none group-hover:scale-110 transition-transform duration-500">
                 </div>
-                <div id="live-badge" class="hidden absolute -bottom-1 -right-2 bg-[#95ff66] text-black font-black text-[9px] px-1.7 py-0.6 rounded z-[110]">LIVE</div>
+                <div id="live-badge" class="hidden absolute -bottom-1 -right-2 bg-brand text-white font-black text-[9px] px-1.7 py-0.6 rounded z-[110]">LIVE</div>
             </div>
 
             <h1 class="text-[2.6rem] md:text-[4.1rem] font-display font-black tracking-tighter uppercase leading-none glow-title py-1.5 text-center">ADAMXBC</h1>
@@ -194,11 +202,11 @@
             <!-- ROW 3 ICÔNES SOUS LE PSEUDO -->
             <div class="flex items-center justify-center gap-6 mt-1 mb-0 relative z-[120]">
                 <!-- MAL -->
-                <a href="https://myanimelist.net/profile/adamxbc" target="_blank" data-track="MAL" class="w-8 h-8 rounded-full bg-[#95ff66]/10 border border-[#95ff66]/20 flex items-center justify-center hover:bg-[#95ff66]/20 hover:border-[#95ff66]/40 transition-all hover:-translate-y-1 shadow-[0_0_10px_rgba(149,255,102,0.05)]">
+                <a href="https://myanimelist.net/profile/adamxbc" target="_blank" data-track="MAL" class="w-8 h-8 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center hover:bg-brand/20 hover:border-brand/40 transition-all hover:-translate-y-1 shadow-[0_0_10px_rgba(var(--accent-rgb),0.05)]">
                     <span class="font-black text-[8px] text-[#4274EA] leading-none">MAL</span>
                 </a>
                 <!-- LETTERBOXD -->
-                <a href="https://letterboxd.com/adamxbc/" target="_blank" data-track="Letterboxd" class="w-8 h-8 rounded-full bg-[#95ff66]/10 border border-[#95ff66]/20 flex items-center justify-center hover:bg-[#95ff66]/20 hover:border-[#95ff66]/40 transition-all hover:-translate-y-1 shadow-[0_0_10px_rgba(149,255,102,0.05)]">
+                <a href="https://letterboxd.com/adamxbc/" target="_blank" data-track="Letterboxd" class="w-8 h-8 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center hover:bg-brand/20 hover:border-brand/40 transition-all hover:-translate-y-1 shadow-[0_0_10px_rgba(var(--accent-rgb),0.05)]">
                     <svg viewBox="0 0 24 24" width="14" height="14"><circle cx="5" cy="12" r="3.5" fill="#00E054"/><circle cx="12" cy="12" r="3.5" fill="#FF8000"/><circle cx="19" cy="12" r="3.5" fill="#40BCF4"/></svg>
                 </a>
             </div>
@@ -206,13 +214,13 @@
 
         <main class="flex flex-col gap-3 md:gap-5 w-full">
             <a href="https://instagram.com/adamxbc" target="_blank" data-track="Instagram" class="btn-active anim-float shine-1 flex items-center justify-between fade-in-up group" style="animation-delay: 0.2s;">
-                <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 13s;"><i class="fa-brands fa-instagram"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">INSTAGRAM</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
+                <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-white text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 13s;"><i class="fa-brands fa-instagram"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">INSTAGRAM</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </a>
             <a href="https://twitch.tv/adamxbc" target="_blank" data-track="Twitch" class="btn-active anim-float shine-2 flex items-center justify-between fade-in-up group" style="animation-delay: 0.3s;">
-                <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 15s;"><i class="fa-brands fa-twitch"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TWITCH</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
+                <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-white text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 15s;"><i class="fa-brands fa-twitch"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TWITCH</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </a>
             <div onclick="openTiktok()" data-track="Menu TikTok" class="btn-active anim-float shine-3 flex items-center justify-between fade-in-up group cursor-pointer" style="animation-delay: 0.4s;">
-                <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-black text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 12s;"><i class="fa-brands fa-tiktok"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TIKTOK</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
+                <div class="flex items-center gap-6 text-left"><div class="icon-blob blob-morph w-10 h-10 bg-white text-brand flex items-center justify-center text-lg shrink-0" style="animation-duration: 12s;"><i class="fa-brands fa-tiktok"></i></div><span class="font-black text-[15.5px] uppercase tracking-wide">TIKTOK</span></div><i class="fa-solid fa-arrow-right text-[13px] opacity-0 group-hover:opacity-100 pr-1.5 transition-opacity"></i>
             </div>
             
             <div onclick="openDiscord()" data-track="Menu Discord" class="btn-inverted anim-float shine-inverted flex items-center fade-in-up group mt-2" style="animation-delay: 0.45s;">
@@ -231,7 +239,7 @@
                     <div class="icon-blob bg-[#050505] text-[#555] border border-white/5 w-10 h-10 flex items-center justify-center rounded-xl"><i class="fa-brands fa-youtube"></i></div>
                     <div class="flex items-center justify-between w-full pr-1">
                         <span class="font-black text-[15.5px] uppercase text-[#666]">YOUTUBE</span>
-                        <span class="text-[9px] font-black bg-[#95ff66]/10 text-brand border border-[#95ff66]/30 px-2.5 py-1 rounded-md uppercase">Bientôt</span>
+                        <span class="text-[9px] font-black bg-brand/10 text-brand border border-brand/30 px-2.5 py-1 rounded-md uppercase">Bientôt</span>
                     </div>
                 </div>
             </div>
@@ -422,7 +430,7 @@
         function drawM() {
             if(!ctx) return;
             ctx.fillStyle = 'rgba(15,15,15,0.3)'; ctx.fillRect(0,0,c.width,c.height);
-            ctx.fillStyle = 'rgba(149,255,102,0.5)'; ctx.font = '8px monospace';
+            ctx.fillStyle = `rgba(${accentRGB()}, 0.5)`; ctx.font = '8px monospace';
             drops.forEach((y, i) => {
                 ctx.fillText(Math.random() > 0.5 ? "1" : "0", i*8, y*8);
                 if(y*8 > c.height && Math.random() > 0.98) drops[i] = 0; else drops[i]++;
