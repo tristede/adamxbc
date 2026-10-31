@@ -411,12 +411,28 @@
 
     <!-- --- LOGIQUE D'INTERFACE DE BASE --- -->
     <script>
-        const acceptAudio = new Audio('accept_cookies.mp3');
-        acceptAudio.preload = 'auto';
-        const clickAudio = new Audio('click.mp3');
-        clickAudio.preload = 'auto';
+        // Sons en Web Audio : décodés une fois, joués sans la latence de <audio> sur mobile.
+        // On saute le silence en tête du mp3 (~30 ms) pour que le clic tombe pile au toucher.
+        const sfxCtx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+        const sfx = {};
+        const loadSfx = (name, url) => fetch(url).then(r => r.arrayBuffer()).then(b => sfxCtx.decodeAudioData(b)).then(buf => {
+            const d = buf.getChannelData(0); let i = 0;
+            while (i < d.length && Math.abs(d[i]) < 0.01) i++;
+            sfx[name] = { buf, offset: i / buf.sampleRate };
+        }).catch(() => {});
+        loadSfx('click', 'click.mp3');
+        loadSfx('accept', 'accept_cookies.mp3');
+        const playSfx = (name) => {
+            const s = sfx[name]; if (!s) return;
+            if (sfxCtx.state !== 'running') sfxCtx.resume();
+            const src = sfxCtx.createBufferSource(); src.buffer = s.buf; src.connect(sfxCtx.destination); src.start(0, s.offset);
+        };
+        // iOS ne débloque l'audio que sur un vrai geste (touchend / click) : on le fait au premier.
+        const unlockSfx = () => { if (sfxCtx.state !== 'running') sfxCtx.resume(); };
+        ['touchend', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, unlockSfx, { passive: true }));
+        const acceptAudio = { play: () => { playSfx('accept'); return Promise.resolve(); } };
 
-        function playClick() { clickAudio.pause(); clickAudio.currentTime = 0; clickAudio.play().catch(e => {}); }
+        function playClick() { playSfx('click'); }
 
         document.addEventListener('pointerdown', (e) => {
             const target = e.target.closest('a, button, .btn-inverted, .btn-disabled, #pp-toggle');
