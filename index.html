@@ -67,14 +67,15 @@
         .btn-active { background-color: var(--accent); color: #fff; border-radius: var(--btn-radius); transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 4.4px 11px rgba(var(--accent-rgb), 0.1); padding: 18px 24px; position: relative; overflow: hidden; }
         .btn-active:hover { transform: translateY(-2.2px) scale(1.02) !important; box-shadow: 0 0 33px rgba(var(--accent-rgb), 0.4); background-color: var(--accent-hover); }
         .btn-active::after { content: ''; position: absolute; top: 0; left: -100px; width: 50px; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(var(--accent-shine-rgb), 0.9) 0%, rgba(var(--accent-shine-rgb), 0.9) 40%, transparent 40%, transparent 60%, rgba(var(--accent-shine-rgb), 0.5) 60%, rgba(var(--accent-shine-rgb), 0.5) 80%, transparent 80%); transform: skewX(-25deg); pointer-events: none; z-index: 10; }
-        .shine-1::after { animation: btnShine1 15s steps(20) infinite; }
+        .shine-1::after { animation: btnShine1 15s steps(8) infinite; }
         .shine-2::after { animation: btnShine2 19s steps(20) infinite 1.5s; }
         .shine-3::after { animation: btnShine3 17s steps(20) infinite 0.8s; }
-        @keyframes btnShine1 { 0% { left: -100px; } 5% { left: 120%; } 100% { left: 120%; } }
+        @keyframes btnShine1 { 0% { left: -100px; } 4.45% { left: 120%; } 100% { left: 120%; } } /* 0,67 s sur 15 s */
+        @keyframes btnShineD { 0% { left: -100px; } 3.7% { left: 120%; } 100% { left: 120%; } } /* 0,67 s sur 18 s */
         .btn-inverted { background-color: #050505; color: var(--accent); border: 2px solid var(--accent); border-radius: var(--btn-radius); transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 4.4px 11px rgba(var(--accent-rgb), 0.1), inset 0 0 15px rgba(var(--accent-rgb), 0.05); padding: 27px 24px; position: relative; overflow: hidden; cursor: pointer; }
         .btn-inverted:hover { transform: translateY(-2.2px) scale(1.02) !important; box-shadow: 0 0 33px rgba(var(--accent-rgb), 0.4), inset 0 0 20px rgba(var(--accent-rgb), 0.15); background-color: #0a0a0a; }
         .btn-inverted::after { content: ''; position: absolute; top: 0; left: -100px; width: 50px; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(var(--accent-rgb), 0.8) 0%, rgba(var(--accent-rgb), 0.8) 40%, transparent 40%, transparent 60%, rgba(var(--accent-rgb), 0.4) 60%, rgba(var(--accent-rgb), 0.4) 80%, transparent 80%); transform: skewX(-25deg); pointer-events: none; z-index: 10; }
-        .shine-inverted::after { animation: btnShine1 18s steps(20) infinite 2s; }
+        .shine-inverted::after { animation: btnShineD 18s steps(8) infinite 2s; }
         .icon-blob-inverted { width: 44px; height: 44px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
         .anim-float { animation: float 6s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
