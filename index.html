@@ -261,7 +261,7 @@
         <header class="flex flex-col items-center mb-3 md:mb-6 fade-in-up" style="animation-delay: 0.1s;">
             <div class="relative mb-10 md:mb-12 flex items-center justify-center z-[110]">
                 <!-- PHOTO DE PROFIL EASTER EGG MINI GAME -->
-                <div id="pp-toggle" onclick="window.location.href='mini_games.html'" class="w-[104px] h-[104px] md:w-[135px] md:h-[135px] blob-morph bg-[#050505] flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300 relative z-[110] group" style="animation-duration: 10s;">
+                <div id="pp-toggle" onclick="enterArcade()" class="w-[104px] h-[104px] md:w-[135px] md:h-[135px] blob-morph bg-[#050505] flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300 relative z-[110] group" style="animation-duration: 10s;">
                     <img src="pp.jpg" alt="PP" class="w-full h-full object-cover select-none pointer-events-none group-hover:scale-110 transition-transform duration-500">
                 </div>
                 <div class="orbit" aria-label="Autres réseaux">
@@ -425,6 +425,7 @@
         }).catch(() => {});
         loadSfx('click', 'click.mp3');
         loadSfx('accept', 'accept_cookies.mp3');
+        loadSfx('arcade', 'arcade_enter.m4a');
         const playSfx = (name) => {
             const s = sfx[name]; if (!s) return;
             if (sfxCtx.state !== 'running') sfxCtx.resume();
@@ -437,8 +438,18 @@
 
         function playClick() { playSfx('click'); }
 
+        // Entrée dans l'arcade : glitch sonore, puis on change de page une fois le son joué (~0,5 s)
+        let enteringArcade = false;
+        window.addEventListener('pageshow', () => { enteringArcade = false; }); // retour arrière (cache de page)
+        function enterArcade() {
+            if (enteringArcade) return; enteringArcade = true;
+            const s = sfx.arcade;
+            playSfx('arcade');
+            setTimeout(() => { window.location.href = 'mini_games.html'; }, s ? Math.round((s.buf.duration - s.offset) * 1000) : 0);
+        }
+
         document.addEventListener('pointerdown', (e) => {
-            const target = e.target.closest('a, button, .btn-inverted, .btn-disabled, #pp-toggle');
+            const target = e.target.closest('a, button, .btn-inverted, .btn-disabled');
             if (target && target.id !== 'submit-btn') { playClick(); }
         });
 
