@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <style>:root { --accent: #6200ff; --accent-rgb: 98, 0, 255; --accent-hover: #4e00cc; --accent-shine-rgb: 203, 171, 255; }</style>
+    <style>:root { --accent: #b18cff; --accent-rgb: 177, 140, 255; --accent-hover: #c4a8ff; --accent-shine-rgb: 230, 216, 255; }</style>
     <script>const accentHex = () => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(); const accentRGB = () => getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ADAMXBC | Mini-Jeux</title>
     
-    <!-- Favicon Y2K Étoile Verte -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%236200ff' d='M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z'/></svg>">
+    <!-- Favicon étoile mauve -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23b18cff' d='M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z'/></svg>">
 
     <!-- Polices -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@900&family=Press+Start+2P&family=Big+Shoulders+Display:wght@900&family=Pirata+One&display=swap" rel="stylesheet">
     
     <!-- Icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -25,7 +25,7 @@
             theme: {
                 extend: {
                     colors: { brand: 'rgba(var(--accent-rgb), <alpha-value>)', dash: '#33ccff', rewind: '#ffd700' },
-                    fontFamily: { display: ['Outfit', 'sans-serif'], body: ['Inter', 'sans-serif'], pixel: ['"Press Start 2P"', 'cursive'] },
+                    fontFamily: { display: ['"Big Shoulders Display"', 'sans-serif'], body: ['Inter', 'sans-serif'], pixel: ['"Press Start 2P"', 'cursive'] },
                     animation: { 'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
                 }
             }
@@ -61,15 +61,20 @@
             margin: 0 auto;
             width: 90%;
             max-width: 420px;
-            background-color: #000;
-            border: 2px solid var(--accent);
+            background-color: #140d22;
+            border: 1px solid rgba(var(--accent-rgb), 0.35);
             padding: 24px;
-            border-radius: 20px;
+            border-radius: 14px;
             z-index: 9999;
             box-shadow: 0 0 40px rgba(0,0,0,0.9);
             display: none;
         }
 
+        .ambient-glow { background: radial-gradient(circle, rgba(var(--accent-rgb),0.05) 0%, rgba(0,0,0,0) 65%); }
+        .t-wrap { position: relative; display: inline-block; }
+        .t-xbc { position: absolute; z-index: 2; left: 100%; bottom: -0.3em; margin-left: -0.35em; font-family: 'Pirata One', serif; font-size: 0.5em; line-height: 1; text-transform: none; letter-spacing: 0; transform: rotate(-4deg); color: var(--accent); }
+        .blob-morph { animation: morph 12s ease-in-out infinite; }
+        @keyframes morph { 0%,100% { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; } 33% { border-radius: 65% 35% 55% 45% / 55% 65% 35% 45%; } 66% { border-radius: 40% 60% 30% 70% / 60% 40% 70% 30%; } }
         .mobile-wrapper { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 75px 22px 40px; position: relative; }
         .blink { animation: blinker 1.5s linear infinite; }
         @keyframes blinker { 50% { opacity: 0; } }
@@ -97,13 +102,13 @@
     <div id="cookie-popup">
         <div id="cookie-header" class="flex items-center gap-3 mb-3 pb-2 border-b border-white/5">
             <div id="cookie-icon" class="text-brand"><i class="fa-solid fa-cookie-bite text-3xl"></i></div>
-            <h2 id="cookie-title" class="font-display font-black text-white text-base uppercase tracking-tighter">Alerte Cookies</h2>
+            <h2 id="cookie-title" class="font-display font-black text-white text-2xl uppercase leading-none">Alerte Cookies</h2>
         </div>
         <p id="cookie-text" class="text-white/60 text-[10px] font-bold uppercase tracking-wider mb-5 leading-relaxed">
             Chef, l'accès aux jeux nécessite d'accepter les traceurs pour enregistrer tes scores et tes replays de parties. Tu valides ?
         </p>
         <div class="flex gap-3">
-            <button id="btn-cookie-ok" onclick="handleAccept()" class="bg-brand text-white font-black uppercase text-[11px] p-3 rounded-lg flex-1">Ok</button>
+            <button id="btn-cookie-ok" onclick="handleAccept()" class="bg-brand text-[#140d22] font-black uppercase text-[11px] p-3 rounded-lg flex-1">Ok</button>
             <button id="btn-cookie-non" onclick="handleRefuse()" class="bg-[#151515] text-white font-black uppercase text-[11px] p-3 rounded-lg flex-1 border border-white/10">Non</button>
         </div>
     </div>
@@ -112,15 +117,15 @@
     <div class="mobile-wrapper z-10">
         
         <header class="flex flex-col mb-10 fade-in-up" style="animation-delay: 0.1s;">
-            <h1 class="text-4xl font-display font-black tracking-tighter uppercase text-white leading-none mb-2">Arcade<span class="text-brand">.</span></h1>
+            <h1 class="text-[3.4rem] font-display font-black uppercase text-white leading-none mb-3"><span class="t-wrap">Arcade<span class="t-xbc">xbc</span></span></h1>
             <p class="text-white/40 text-[10px] uppercase font-bold tracking-widest leading-relaxed">
                 Collection de mini-jeux.
             </p>
         </header>
 
         <!-- INFO FIN DE MOIS -->
-        <div class="w-full flex items-start gap-4 bg-brand/5 border border-brand/20 p-5 rounded-2xl mb-8 fade-in-up shadow-[0_0_20px_rgba(var(--accent-rgb),0.05)]" style="animation-delay: 0.2s;">
-            <div class="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-brand shrink-0">
+        <div class="w-full flex items-start gap-4 border-[1.5px] border-dashed border-brand/60 p-5 rounded-[10px] mb-6 fade-in-up" style="animation-delay: 0.2s;">
+            <div class="w-10 h-10 rounded-full border-[1.5px] border-brand flex items-center justify-center text-brand shrink-0 blob-morph">
                 <i class="fa-solid fa-trophy text-lg"></i>
             </div>
             <p class="text-white/70 text-[10px] uppercase font-bold tracking-widest leading-relaxed mt-0.5">
@@ -131,25 +136,25 @@
 
         <main class="flex flex-col gap-5 w-full">
             <!-- JEU 1 : NEON FLY -->
-            <div class="w-full bg-[#0a0a0a] border border-white/10 rounded-2xl p-5 fade-in-up group hover:border-brand/50 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)]" style="animation-delay: 0.3s;">
+            <div class="w-full bg-[#140d22] border border-brand/35 rounded-[10px] p-5 fade-in-up group hover:border-brand transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]" style="animation-delay: 0.3s;">
                 <div class="flex items-center gap-4 mb-5">
-                    <div class="w-16 h-16 rounded-xl bg-[#050505] border border-brand/50 text-brand flex items-center justify-center text-3xl shrink-0 shadow-[0_0_15px_rgba(var(--accent-rgb),0.3)] group-hover:scale-105 transition-transform">
+                    <div class="w-16 h-16 blob-morph bg-brand text-[#140d22] flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-7 h-7" fill="currentColor" style="transform: rotate(15deg);">
                             <rect x="4" y="4" width="16" height="16" />
                         </svg>
                     </div>
                     <div class="flex flex-col">
                         <span class="text-[9px] text-brand uppercase tracking-widest font-black mb-1 bg-brand/10 inline-block w-max px-2 py-0.5 rounded">Jeu du mois</span>
-                        <h3 class="font-display font-black text-2xl uppercase tracking-tighter text-white">Neon Fly</h3>
+                        <h3 class="font-display font-black text-[2rem] uppercase leading-none text-white">Neon Fly</h3>
                     </div>
                 </div>
-                <p class="text-white/50 text-[11px] font-bold mb-5 leading-relaxed">Esquive les obstacles vert fluo. Attention, les tuyaux bougent à partir de 3 points !</p>
-                <button onclick="openGame()" class="w-full bg-white/5 border border-brand text-brand hover:bg-brand hover:text-white font-black uppercase text-[12px] p-3.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 mb-4">
+                <p class="text-white/50 text-[11px] font-bold mb-5 leading-relaxed">Esquive les obstacles. Attention, les tuyaux bougent à partir de 3 points !</p>
+                <button onclick="openGame()" class="w-full bg-brand text-[#140d22] hover:bg-[#c4a8ff] font-black uppercase text-[12px] p-3.5 rounded-[10px] transition-all duration-300 flex items-center justify-center gap-2 mb-4">
                     <i class="fa-solid fa-play"></i> Jouer maintenant
                 </button>
 
                 <!-- SCORE BOARD MINI -->
-                <div class="w-full bg-black/50 border border-white/10 rounded-xl p-4">
+                <div class="w-full bg-black/40 border border-brand/15 rounded-[10px] p-4">
                     <div class="flex justify-between items-end mb-3">
                         <h3 class="font-black text-brand text-[10px] uppercase tracking-widest flex items-center gap-2">
                             <i class="fa-solid fa-trophy"></i> Top Scores
@@ -168,14 +173,14 @@
             </div>
 
             <!-- JEU 2 : BIENTÔT -->
-            <div class="w-full bg-[#050505] border border-white/5 rounded-2xl p-5 fade-in-up opacity-50 pointer-events-none" style="animation-delay: 0.4s;">
+            <div class="w-full border-[1.5px] border-dashed border-white/15 rounded-[10px] p-5 fade-in-up opacity-60 pointer-events-none" style="animation-delay: 0.4s;">
                 <div class="flex items-center gap-4 mb-4">
-                    <div class="w-16 h-16 rounded-xl bg-white/5 text-white/30 flex items-center justify-center text-3xl shrink-0 border border-white/10">
+                    <div class="w-16 h-16 blob-morph bg-white/5 text-white/30 flex items-center justify-center text-3xl shrink-0 border border-white/10">
                         <i class="fa-solid fa-lock"></i>
                     </div>
                     <div class="flex flex-col">
                         <span class="text-[9px] text-white/40 uppercase tracking-widest font-black mb-1">Mois prochain</span>
-                        <h3 class="font-display font-black text-xl uppercase tracking-tighter text-white/50">Jeu Secret</h3>
+                        <h3 class="font-display font-black text-[1.7rem] uppercase leading-none text-white/50">Jeu Secret</h3>
                     </div>
                 </div>
                 <p class="text-white/30 text-[11px] font-bold">Un nouveau défi sera débloqué très prochainement. Reste à l'affût !</p>
@@ -190,14 +195,14 @@
         
         <!-- HEADER EN JEU -->
         <div class="w-full max-w-[360px] flex justify-between items-center mb-4 px-4 relative z-[3050]">
-            <h2 class="font-display font-black text-brand text-2xl uppercase tracking-tighter drop-shadow-[0_0_8px_rgba(var(--accent-rgb),0.5)]">Neon Fly</h2>
+            <h2 class="font-display font-black text-white text-3xl uppercase leading-none">Neon Fly</h2>
             <button onclick="closeGame()" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
 
         <!-- REPLAY BANNER (CACHÉ) -->
-        <div id="replay-banner" class="absolute top-0 left-0 w-full bg-brand text-white font-black uppercase text-[10px] p-3 flex justify-between items-center z-[4000] hidden">
+        <div id="replay-banner" class="absolute top-0 left-0 w-full bg-brand text-[#140d22] font-black uppercase text-[10px] p-3 flex justify-between items-center z-[4000] hidden">
             <span><i class="fa-solid fa-video blink mr-2"></i> Replay : <span id="replay-pseudo" class="font-pixel text-[8px]"></span></span>
             <button onclick="stopReplay()" class="bg-black text-brand border border-black/20 px-3 py-2 rounded-md hover:bg-black/80 transition-colors">Quitter</button>
         </div>
@@ -228,7 +233,7 @@
 
                 <!-- GAME OVER SCREEN -->
                 <div id="game-over-ui" class="flex flex-col items-center w-full hidden">
-                    <h3 class="font-display font-black text-white text-3xl uppercase tracking-tighter mb-1">GAME OVER</h3>
+                    <h3 class="font-display font-black text-white text-5xl uppercase leading-none mb-2">GAME OVER</h3>
                     <p class="text-white/60 font-bold uppercase text-[10px] tracking-widest mb-6">Score : <span id="final-score" class="text-brand text-lg">0</span></p>
 
                     <div id="score-submit-box" class="w-full bg-white/5 border border-brand/30 rounded-xl p-4 mb-4">
@@ -308,7 +313,7 @@
             const btnNon = document.getElementById('btn-cookie-non');
             
             btnOk.innerHTML = '<i class="fa-brands fa-twitch text-sm"></i> Follow';
-            btnOk.className = 'bg-brand text-white font-black uppercase text-[11px] p-3 rounded-lg flex-1 flex items-center justify-center gap-2 transition-transform hover:scale-95';
+            btnOk.className = 'bg-brand text-[#140d22] font-black uppercase text-[11px] p-3 rounded-lg flex-1 flex items-center justify-center gap-2 transition-transform hover:scale-95';
             btnOk.onclick = function() { window.open('https://twitch.tv/adamxbc', '_blank'); document.getElementById('cookie-popup').style.display = 'none'; };
             btnNon.onclick = function() { document.getElementById('cookie-popup').style.display = 'none'; };
             document.getElementById('leaderboard-list').innerHTML = '<div class="text-brand text-[10px] font-black uppercase text-center mt-2">Accepte les cookies pour jouer et voir le classement !</div>';
@@ -322,7 +327,7 @@
             document.getElementById('score-submit-box').innerHTML = `
                 <p class="text-[10px] text-white/70 uppercase font-bold mb-3">Enregistre ton score et ton replay !</p>
                 <input type="text" id="player-pseudo" maxlength="12" placeholder="TON PSEUDO" class="w-full bg-black border border-brand/50 rounded-lg p-3 text-center text-white font-black uppercase text-xs focus:outline-none focus:border-brand mb-3">
-                <button onclick="submitScore()" id="submit-btn" class="w-full bg-brand text-white font-black uppercase text-[11px] p-3 rounded-lg hover:scale-[0.98] transition-transform">Envoyer</button>
+                <button onclick="submitScore()" id="submit-btn" class="w-full bg-brand text-[#140d22] font-black uppercase text-[11px] p-3 rounded-lg hover:scale-[0.98] transition-transform">Envoyer</button>
             `;
         }
 
@@ -856,7 +861,7 @@
                 const btnNon = document.getElementById('btn-cookie-non');
                 
                 btnOk.innerHTML = 'Ok';
-                btnOk.className = 'bg-brand text-white font-black uppercase text-[11px] p-3 rounded-lg flex-1';
+                btnOk.className = 'bg-brand text-[#140d22] font-black uppercase text-[11px] p-3 rounded-lg flex-1';
                 btnOk.onclick = handleAccept;
                 
                 btnNon.innerHTML = 'Non';
