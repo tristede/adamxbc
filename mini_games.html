@@ -13,7 +13,7 @@
     <!-- Polices -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@900&family=Press+Start+2P&family=Big+Shoulders+Display:wght@900&family=Pirata+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@900&family=Press+Start+2P&family=Big+Shoulders+Display:wght@900&family=Herr+Von+Muellerhoff&display=swap" rel="stylesheet">
     
     <!-- Icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -72,7 +72,9 @@
 
         .ambient-glow { background: radial-gradient(circle, rgba(var(--accent-rgb),0.05) 0%, rgba(0,0,0,0) 65%); }
         .t-wrap { position: relative; display: inline-block; }
-        .t-xbc { position: absolute; z-index: 2; left: 100%; bottom: -0.3em; margin-left: -0.35em; font-family: 'Pirata One', serif; font-size: 0.5em; line-height: 1; text-transform: none; letter-spacing: 0; transform: rotate(-4deg); color: var(--accent); }
+        .t-xbc { position: absolute; z-index: 2; left: 62%; bottom: -0.32em; font-family: 'Herr Von Muellerhoff', cursive; font-weight: 400; font-size: 0.82em; line-height: 1; text-transform: none; letter-spacing: 0; white-space: nowrap; transform: rotate(-6deg); color: var(--accent); }
+        /* Contour gris clair seulement sur le titre : voile sombre translucide, invisible sur le fond */
+        .t-xbc-line { color: transparent; -webkit-text-stroke: 2.4px rgba(20, 10, 30, 0.2); }
         .blob-morph { animation: morph 12s ease-in-out infinite; }
         @keyframes morph { 0%,100% { border-radius: 35% 65% 45% 55% / 45% 35% 65% 55%; } 33% { border-radius: 65% 35% 55% 45% / 55% 65% 35% 45%; } 66% { border-radius: 40% 60% 30% 70% / 60% 40% 70% 30%; } }
         .mobile-wrapper { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 75px 22px 40px; position: relative; }
@@ -117,7 +119,7 @@
     <div class="mobile-wrapper z-10">
         
         <header class="flex flex-col mb-10 fade-in-up" style="animation-delay: 0.1s;">
-            <h1 class="text-[3.4rem] font-display font-black uppercase text-white leading-none mb-3"><span class="t-wrap">Arcade<span class="t-xbc">xbc</span></span></h1>
+            <h1 class="text-[3.4rem] font-display font-black uppercase text-white leading-none mb-3"><span class="t-wrap">Arcade<span class="t-xbc t-xbc-line" aria-hidden="true">Xbc</span><span class="t-xbc">Xbc</span></span></h1>
             <p class="text-white/40 text-[10px] uppercase font-bold tracking-widest leading-relaxed">
                 Collection de mini-jeux.
             </p>
@@ -125,7 +127,7 @@
 
         <!-- INFO FIN DE MOIS -->
         <div class="w-full flex items-start gap-4 border-[1.5px] border-dashed border-brand/60 p-5 rounded-[10px] mb-6 fade-in-up" style="animation-delay: 0.2s;">
-            <div class="w-10 h-10 rounded-full border-[1.5px] border-brand flex items-center justify-center text-brand shrink-0 blob-morph">
+            <div class="w-10 h-10 flex items-center justify-center text-brand shrink-0">
                 <i class="fa-solid fa-trophy text-lg"></i>
             </div>
             <p class="text-white/70 text-[10px] uppercase font-bold tracking-widest leading-relaxed mt-0.5">
@@ -138,8 +140,8 @@
             <!-- JEU 1 : NEON FLY -->
             <div class="w-full bg-[#140d22] border border-brand/35 rounded-[10px] p-5 fade-in-up group hover:border-brand transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]" style="animation-delay: 0.3s;">
                 <div class="flex items-center gap-4 mb-5">
-                    <div class="w-16 h-16 blob-morph bg-brand text-[#140d22] flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-7 h-7" fill="currentColor" style="transform: rotate(15deg);">
+                    <div class="w-16 h-16 text-brand flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-11 h-11" fill="currentColor" style="transform: rotate(15deg);">
                             <rect x="4" y="4" width="16" height="16" />
                         </svg>
                     </div>
